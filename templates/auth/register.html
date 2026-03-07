@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CineVerse – Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #080a0f;
+      --surface: #0e1118;
+      --card: #13161f;
+      --border: rgba(255, 255, 255, 0.07);
+      --gold: #e8b84b;
+      --gold-dim: #a07a1e;
+      --text: #e8e6e0;
+      --muted: #6b6d75;
+      --red: #c0392b;
+      --green: #27ae60;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .film-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        repeating-linear-gradient(90deg, transparent 0px, transparent 18px, rgba(255, 255, 255, 0.015) 18px, rgba(255, 255, 255, 0.015) 20px),
+        repeating-linear-gradient(180deg, transparent 0px, transparent 58px, rgba(255, 255, 255, 0.012) 58px, rgba(255, 255, 255, 0.012) 60px);
+    }
+
+    .glow-top {
+      position: fixed;
+      top: -200px;
+      right: -100px;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232, 184, 75, 0.07) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      animation: pulse 7s ease-in-out infinite alternate;
+    }
+
+    .glow-bottom {
+      position: fixed;
+      bottom: -200px;
+      left: -100px;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(192, 57, 43, 0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      animation: pulse 9s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes pulse {
+      from {
+        opacity: 0.5;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 500px;
+    }
+
+    .left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px;
+      border-right: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(232, 184, 75, 0.03) 0%, transparent 60%);
+    }
+
+    .brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(64px, 8vw, 110px);
+      letter-spacing: 4px;
+      line-height: 0.9;
+      background: linear-gradient(135deg, var(--gold) 0%, #fff5d6 50%, var(--gold-dim) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .tagline {
+      margin-top: 20px;
+      font-size: 15px;
+      color: var(--muted);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      animation: fadeUp 0.8s 0.15s ease both;
+    }
+
+    .steps {
+      margin-top: 52px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .step-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      color: var(--gold);
+      line-height: 1;
+      flex-shrink: 0;
+      text-shadow: 0 0 20px rgba(232, 184, 75, 0.4);
+    }
+
+    .step-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .step-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .step-desc {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 48px;
+      background: var(--surface);
+      overflow-y: auto;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 400px;
+      animation: fadeUp 0.8s 0.2s ease both;
+      padding: 10px 0;
+    }
+
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      letter-spacing: 2px;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .card-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .card-sub a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    .card-sub a:hover {
+      text-decoration: underline;
+    }
+
+    .flash {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    .flash.error {
+      background: rgba(192, 57, 43, 0.15);
+      border: 1px solid rgba(192, 57, 43, 0.3);
+      color: #e74c3c;
+    }
+
+    .flash.success {
+      background: rgba(39, 174, 96, 0.15);
+      border: 1px solid rgba(39, 174, 96, 0.3);
+      color: #2ecc71;
+    }
+
+    .row2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    input[type=text],
+    input[type=email],
+    input[type=password] {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 13px 16px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+
+    input[type=text]:focus,
+    input[type=email]:focus,
+    input[type=password]:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(232, 184, 75, 0.12);
+    }
+
+    input::placeholder {
+      color: var(--muted);
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .eye-btn {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 16px;
+      padding: 0;
+      transition: color 0.2s;
+    }
+
+    .eye-btn:hover {
+      color: var(--gold);
+    }
+
+    .strength-bar {
+      height: 3px;
+      border-radius: 2px;
+      margin-top: 8px;
+      background: var(--border);
+      overflow: hidden;
+    }
+
+    .strength-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 2px;
+      transition: width 0.3s, background 0.3s;
+    }
+
+    .strength-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+      height: 14px;
+    }
+
+    .field.error input[type=text],
+    .field.error input[type=email],
+    .field.error input[type=password] {
+      border-color: var(--red);
+    }
+
+    .field-err {
+      font-size: 12px;
+      color: var(--red);
+      margin-top: 5px;
+      display: none;
+    }
+
+    .field.error .field-err {
+      display: block;
+    }
+
+    .terms {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+
+    .terms input[type=checkbox] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--gold);
+      cursor: pointer;
+      margin: 0;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .terms a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    .btn-register {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--gold) 0%, #c9962a 100%);
+      border: none;
+      border-radius: 8px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 2px;
+      color: #0a0800;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s, filter 0.2s;
+      box-shadow: 0 4px 24px rgba(232, 184, 75, 0.3);
+    }
+
+    .btn-register:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(232, 184, 75, 0.45);
+      filter: brightness(1.08);
+    }
+
+    .btn-register:active {
+      transform: translateY(0);
+    }
+
+    .login-row {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .login-row a {
+      color: var(--gold);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .login-row a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(24px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 860px) {
+      .page {
+        grid-template-columns: 1fr;
+      }
+
+      .left {
+        display: none;
+      }
+
+      .right {
+        min-height: 100vh;
+        padding: 40px 28px;
+      }
+
+      .row2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="film-bg"></div>
+  <div class="glow-top"></div>
+  <div class="glow-bottom"></div>
+
+  <div class="page">
+
+    <!-- LEFT -->
+    <div class="left">
+      <div class="brand">Cine<br>Verse</div>
+      <div class="tagline">Join the Community</div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-info">
+            <div class="step-title">Create Your Account</div>
+            <div class="step-desc">Sign up in seconds with your name, email and password</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-info">
+            <div class="step-title">Discover Movies</div>
+            <div class="step-desc">Search thousands of movies powered by TMDB API</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-info">
+            <div class="step-title">Rate with Moctale Meter</div>
+            <div class="step-desc">Skip, Timepass, Go for It or Perfection — your call</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-info">
+            <div class="step-title">Build Your Vibe Chart</div>
+            <div class="step-desc">Tag movies with your own genre percentage mix</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+      <div class="card">
+        <div class="card-title">Create Account</div>
+        <div class="card-sub">Already have an account? <a href="/login">Sign in</a></div>
+
+        <form id="registerForm" method="POST" action="/register" novalidate>
+
+          <div class="row2">
+            <div class="field" id="usernameField">
+              <label for="username">Username</label>
+              <input type="text" id="username" name="username" placeholder="cooluser123" />
+              <div class="field-err">Username is required.</div>
+            </div>
+            <div class="field" id="emailField">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="you@email.com" />
+              <div class="field-err">Enter a valid email.</div>
+            </div>
+          </div>
+
+          <div class="field" id="passField">
+            <label for="password">Password</label>
+            <div class="input-wrap">
+              <input type="password" id="password" name="password" placeholder="Min. 8 characters e.g. Test@1234" />
+              <button type="button" class="eye-btn" id="eyeBtn1">👁</button>
+            </div>
+            <div class="strength-bar">
+              <div class="strength-fill" id="strengthFill"></div>
+            </div>
+            <div class="strength-label" id="strengthLabel"></div>
+            <div class="field-err">Password must be 8+ characters with uppercase, lowercase, number and special
+              character.</div>
+          </div>
+
+          <div class="field" id="confirmField">
+            <label for="confirm">Confirm Password</label>
+            <div class="input-wrap">
+              <input type="password" id="confirm" name="confirm" placeholder="Repeat password" />
+              <button type="button" class="eye-btn" id="eyeBtn2">👁</button>
+            </div>
+            <div class="field-err">Passwords do not match.</div>
+          </div>
+
+          <label class="terms">
+            <input type="checkbox" id="terms" />
+            I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          </label>
+
+          <button type="submit" class="btn-register">Create Account</button>
+        </form>
+
+        <div class="login-row">
+          Already have an account? <a href="/login">Sign in here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle password visibility
+    function togglePass(inputId, btnId) {
+      const input = document.getElementById(inputId);
+      const btn = document.getElementById(btnId);
+      btn.addEventListener('click', () => {
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.textContent = show ? '🙈' : '👁';
+      });
+    }
+    togglePass('password', 'eyeBtn1');
+    togglePass('confirm', 'eyeBtn2');
+
+    // Password strength meter
+    document.getElementById('password').addEventListener('input', function () {
+      const val = this.value;
+      const fill = document.getElementById('strengthFill');
+      const label = document.getElementById('strengthLabel');
+      let strength = 0;
+      if (val.length >= 6) strength++;
+      if (val.length >= 10) strength++;
+      if (/[A-Z]/.test(val)) strength++;
+      if (/[0-9]/.test(val)) strength++;
+      if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+      const levels = [
+        { w: '0%', color: '', text: '' },
+        { w: '25%', color: '#e74c3c', text: 'Weak' },
+        { w: '50%', color: '#e67e22', text: 'Fair' },
+        { w: '75%', color: '#f1c40f', text: 'Good' },
+        { w: '100%', color: '#27ae60', text: 'Strong' },
+      ];
+      const l = levels[Math.min(strength, 4)];
+      fill.style.width = l.w;
+      fill.style.background = l.color;
+      label.textContent = l.text;
+      label.style.color = l.color;
+    });
+
+    // Form validation
+    document.getElementById('registerForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      let valid = true;
+
+      const username = document.getElementById('username');
+      const email = document.getElementById('email');
+      const password = document.getElementById('password');
+      const confirm = document.getElementById('confirm');
+      const terms = document.getElementById('terms');
+
+      if (!username.value.trim()) {
+        document.getElementById('usernameField').classList.add('error'); valid = false;
+      } else { document.getElementById('usernameField').classList.remove('error'); }
+
+      if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
+        document.getElementById('emailField').classList.add('error'); valid = false;
+      } else { document.getElementById('emailField').classList.remove('error'); }
+
+      const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+      if (!password.value || !passRegex.test(password.value)) {
+        document.getElementById('passField').classList.add('error'); valid = false;
+      } else { document.getElementById('passField').classList.remove('error'); }
+
+      if (confirm.value !== password.value || !confirm.value) {
+        document.getElementById('confirmField').classList.add('error'); valid = false;
+      } else { document.getElementById('confirmField').classList.remove('error'); }
+
+      if (!terms.checked) {
+        alert('Please agree to the Terms of Service to continue.');
+        valid = false;
+      }
+
+      if (valid) this.submit();
+    });
+
+    // Clear errors on typing
+    ['username', 'email', 'password', 'confirm'].forEach(id => {
+      document.getElementById(id).addEventListener('input', () => {
+        const map = { username: 'usernameField', email: 'emailField', password: 'passField', confirm: 'confirmField' };
+        document.getElementById(map[id]).classList.remove('error');
+      });
+    });
+  </script>
+</body>
+
+</html>
