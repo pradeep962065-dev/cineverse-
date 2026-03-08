@@ -21,7 +21,7 @@ class MoctaleRating(db.Model):
     __tablename__ = 'moctale_meter'
     rating_id   = db.Column(db.Integer, primary_key=True)
     user_id     = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    movie_id    = db.Column(db.Integer, nullable=False)
+    movie_id    = db.Column(db.String(20), nullable=False)
     meter_value = db.Column(db.String(20), nullable=False)
     rated_on    = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -29,7 +29,7 @@ class VibeChart(db.Model):
     __tablename__ = 'vibe_chart'
     vibe_id     = db.Column(db.Integer, primary_key=True)
     user_id     = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    movie_id    = db.Column(db.Integer, nullable=False)
+    movie_id    = db.Column(db.String(20), nullable=False)
     action      = db.Column(db.Float, default=0)
     romance     = db.Column(db.Float, default=0)
     comedy      = db.Column(db.Float, default=0)
@@ -40,7 +40,7 @@ class Comment(db.Model):
     __tablename__ = 'comments'
     comment_id  = db.Column(db.Integer, primary_key=True)
     user_id     = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    movie_id    = db.Column(db.Integer, nullable=False)
+    movie_id    = db.Column(db.String(20), nullable=False)
     content     = db.Column(db.Text, nullable=False)
     likes       = db.Column(db.Integer, default=0)
     created_at  = db.Column(db.DateTime, default=datetime.utcnow)
