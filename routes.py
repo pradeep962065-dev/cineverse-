@@ -133,8 +133,10 @@ def api_vibe():
 @app.route('/api/dashboard')
 @login_required
 def api_dashboard():
+    from models import Watchlist
     ratings_count = MoctaleRating.query.filter_by(user_id=current_user.user_id).count()
     vibes_count = VibeChart.query.filter_by(user_id=current_user.user_id).count()
+    watchlist_count = Watchlist.query.filter_by(user_id=current_user.user_id).count()
     return jsonify({
         'user': {
             'username': current_user.username,
@@ -143,7 +145,7 @@ def api_dashboard():
         },
         'ratings_count': ratings_count,
         'vibes_count': vibes_count,
-        'watchlist_count': 0
+        'watchlist_count': watchlist_count
     })
 
 # My Ratings API
@@ -183,10 +185,43 @@ def api_my_vibes():
             'action': v.action,
             'romance': v.romance
         })
-    return jsonify({'vibes': result})
+    return jsonify({'vibes': result}) 
+
+
+# Add to Watchlist
+@app.route('/api/watchlist/add', methods=['POST'])
+@login_required
+def add_watchlist():
+    from models import Watchlist
+    data = request.get_json()
+    existing = Watchlist.query.filter_by(user_id=current_user.user_id, movie_id=data['movie_id']).first()
+    if existing:
+        return jsonify({'success': False, 'message': 'Already in watchlist!'})
+    watch = Watchlist(user_id=current_user.user_id, movie_id=data['movie_id'])
+    db.session.add(watch)
+    db.session.commit()
+    return jsonify({'success': True})
+
+# Remove from Watchlist
+@app.route('/api/watchlist/remove', methods=['POST'])
+@login_required
+def remove_watchlist():
+    from models import Watchlist
+    data = request.get_json()
+    Watchlist.query.filter_by(user_id=current_user.user_id, movie_id=data['movie_id']).delete()
+    db.session.commit()
+    return jsonify({'success': True})
 
 # My Watchlist API
 @app.route('/api/my-watchlist')
 @login_required
 def api_my_watchlist():
-    return jsonify({'movies': []})   
+    from models import Watchlist
+    from omdb_service import get_movie_details
+    watches = Watchlist.query.filter_by(user_id=current_user.user_id).all()
+    result = []
+    for w in watches:
+        movie = get_movie_details(w.movie_id)
+        if movie:
+            result.append(movie)
+    return jsonify({'movies': result})    

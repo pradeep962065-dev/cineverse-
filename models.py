@@ -51,3 +51,10 @@ class Dashboard(db.Model):
     user_id     = db.Column(db.Integer, db.ForeignKey('users.user_id'), unique=True)
     fav_genre   = db.Column(db.String(50))
     total_votes = db.Column(db.Integer, default=0)
+
+class Watchlist(db.Model):
+    __tablename__ = 'watchlist'
+    watch_id    = db.Column(db.Integer, primary_key=True)
+    user_id     = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    movie_id    = db.Column(db.String(20), nullable=False)
+    added_on    = db.Column(db.DateTime, default=datetime.utcnow)  

@@ -713,6 +713,9 @@
   <nav>
     <a href="/" class="nav-brand">CineVerse</a>
     <a href="/" class="nav-back">← Back to Home</a>
+    <button id="watchlistBtn" onclick="toggleWatchlist()"
+      style="padding:8px 20px; border-radius:6px; font-size:13px; background:transparent; border:1px solid var(--gold); color:var(--gold); cursor:pointer; transition:all 0.2s;">+
+      Watchlist</button>
   </nav>
 
   <!-- LOADING STATE -->
@@ -1083,6 +1086,27 @@
       </div>` + list.innerHTML;
       document.getElementById('commentText').value = '';
     }
+    async function toggleWatchlist() {
+      const btn = document.getElementById('watchlistBtn');
+      try {
+        const res = await fetch('/api/watchlist/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ movie_id: imdbID })
+        });
+        const data = await res.json();
+        if (data.success) {
+          btn.textContent = '✅ In Watchlist';
+          btn.style.borderColor = '#27ae60';
+          btn.style.color = '#27ae60';
+        } else {
+          alert(data.message || 'Please login first!');
+        }
+      } catch (e) { alert('Please login to add to watchlist!'); }
+    }
+
+    // Init
+    loadMovie();
 
     // Init
     loadMovie();
