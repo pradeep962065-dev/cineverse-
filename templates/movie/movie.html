@@ -1054,8 +1054,6 @@
 
     async function submitVibe() {
       const ids = ['action', 'romance', 'comedy', 'thriller', 'drama'];
-      const total = ids.reduce((s, id) => s + parseInt(document.getElementById(id).value), 0);
-      if (total !== 100) { alert('Total must equal 100%!'); return; }
       const vibe = {};
       ids.forEach(id => vibe[id] = parseInt(document.getElementById(id).value));
       try {
