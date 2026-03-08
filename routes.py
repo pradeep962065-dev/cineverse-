@@ -45,7 +45,9 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
+        print(f"EMAIL: {email}, PASSWORD: {password}")
         user = User.query.filter_by(email=email).first()
+        print(f"USER FOUND: {user}")
         if user and check_password_hash(user.password, password):
             login_user(user)
             return redirect(url_for('dashboard'))
@@ -131,8 +133,8 @@ def api_vibe():
 @app.route('/api/dashboard')
 @login_required
 def api_dashboard():
-    ratings_count = MoctaleRating.query.filter_by(user_id=current_user.id).count()
-    vibes_count = VibeChart.query.filter_by(user_id=current_user.id).count()
+    ratings_count = MoctaleRating.query.filter_by(user_id=current_user.user_id).count()
+    vibes_count = VibeChart.query.filter_by(user_id=current_user.user_id).count()
     return jsonify({
         'user': {
             'username': current_user.username,
@@ -149,7 +151,7 @@ def api_dashboard():
 @login_required
 def api_my_ratings():
     from omdb_service import get_movie_details
-    ratings = MoctaleRating.query.filter_by(user_id=current_user.id).all()
+    ratings = MoctaleRating.query.filter_by(user_id=current_user.user_id).all()
     result = []
     for r in ratings:
         movie = get_movie_details(r.movie_id)
@@ -167,7 +169,7 @@ def api_my_ratings():
 @login_required
 def api_my_vibes():
     from omdb_service import get_movie_details
-    vibes = VibeChart.query.filter_by(user_id=current_user.id).all()
+    vibes = VibeChart.query.filter_by(user_id=current_user.user_id).all()
     result = []
     for v in vibes:
         movie = get_movie_details(v.movie_id)
