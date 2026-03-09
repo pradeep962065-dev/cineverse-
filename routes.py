@@ -35,7 +35,6 @@ def register():
         )
         db.session.add(new_user)
         db.session.commit()
-        print(f"USER SAVED: {username}, {email}")
         flash('Account created! Please login.', 'success')
         return redirect(url_for('login'))
     return render_template('auth/register.html')
@@ -46,9 +45,7 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        print(f"EMAIL: {email}, PASSWORD: {password}")
         user = User.query.filter_by(email=email).first()
-        print(f"USER FOUND: {user}")
         if user and check_password_hash(user.password, password):
             login_user(user)
             return redirect(url_for('dashboard'))
