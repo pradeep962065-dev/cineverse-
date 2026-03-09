@@ -2,7 +2,7 @@ import os
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from app import app, db
+from app import app, db, mail
 from models import User, MoctaleRating, VibeChart
 from omdb_service import search_movies as omdb_search
 
@@ -26,7 +26,7 @@ def register():
 
         if User.query.filter_by(username=username).first():
             flash('Username already taken!', 'error')
-            return redirect(url_for('login'))
+            return redirect(url_for('register'))
 
         new_user = User(
             username=username,
@@ -35,6 +35,7 @@ def register():
         )
         db.session.add(new_user)
         db.session.commit()
+        print(f"USER SAVED: {username}, {email}")
         flash('Account created! Please login.', 'success')
         return redirect(url_for('login'))
     return render_template('auth/register.html')
@@ -102,6 +103,12 @@ def api_ratings(imdb_id):
 @login_required
 def api_rate():
     data = request.get_json()
+    existing = MoctaleRating.query.filter_by(
+        user_id=current_user.user_id,
+        movie_id=data['movie_id']
+    ).first()
+    if existing:
+        return jsonify({'success': False, 'message': 'You have already rated this movie!'})
     rating = MoctaleRating(
         user_id=current_user.user_id,
         movie_id=data['movie_id'],
@@ -116,6 +123,12 @@ def api_rate():
 @login_required
 def api_vibe():
     data = request.get_json()
+    existing = VibeChart.query.filter_by(
+        user_id=current_user.user_id,
+        movie_id=data['movie_id']
+    ).first()
+    if existing:
+        return jsonify({'success': False, 'message': 'You have already submitted a vibe for this movie!'})
     vibe = VibeChart(
         user_id=current_user.user_id,
         movie_id=data['movie_id'],
@@ -129,7 +142,7 @@ def api_vibe():
     db.session.commit()
     return jsonify({'success': True})
 
- # Dashboard API
+# Dashboard API
 @app.route('/api/dashboard')
 @login_required
 def api_dashboard():
@@ -180,13 +193,11 @@ def api_my_vibes():
             'title': movie.get('Title', v.movie_id) if movie else v.movie_id,
             'year': movie.get('Year', '') if movie else '',
             'thriller': v.thriller,
-            'mystery': v.mystery,
             'drama': v.drama,
             'action': v.action,
             'romance': v.romance
         })
-    return jsonify({'vibes': result}) 
-
+    return jsonify({'vibes': result})
 
 # Add to Watchlist
 @app.route('/api/watchlist/add', methods=['POST'])
@@ -224,4 +235,50 @@ def api_my_watchlist():
         movie = get_movie_details(w.movie_id)
         if movie:
             result.append(movie)
-    return jsonify({'movies': result})    
+    return jsonify({'movies': result})
+
+# Post Comment
+@app.route('/api/comment', methods=['POST'])
+@login_required
+def post_comment():
+    from models import Comment
+    data = request.get_json()
+    comment = Comment(
+        user_id=current_user.user_id,
+        movie_id=data['movie_id'],
+        content=data['content']
+    )
+    db.session.add(comment)
+    db.session.commit()
+    return jsonify({'success': True})
+
+# Get Comments
+@app.route('/api/comments/<imdb_id>')
+def get_comments(imdb_id):
+    from models import Comment
+    comments = Comment.query.filter_by(movie_id=imdb_id).order_by(Comment.created_at.desc()).all()
+    result = []
+    for c in comments:
+        user = User.query.get(c.user_id)
+        result.append({
+            'username': user.username if user else 'Unknown',
+            'content': c.content,
+            'date': c.created_at.strftime('%b %d, %Y')
+        })
+    return jsonify({'comments': result})
+
+# Email Verification
+@app.route('/verify/<token>')
+def verify_email(token):
+    from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+    s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    try:
+        email = s.loads(token, salt='email-verify', max_age=3600)
+        user = User.query.filter_by(email=email).first()
+        if user:
+            user.is_verified = True
+            db.session.commit()
+            flash('Email verified! Please login.', 'success')
+    except SignatureExpired:
+        flash('Verification link expired!', 'error')
+    return redirect(url_for('login'))

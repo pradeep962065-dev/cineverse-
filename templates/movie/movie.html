@@ -1071,20 +1071,44 @@
     }
 
     // ── Comments ──
-    function submitComment() {
+    async function submitComment() {
       const text = document.getElementById('commentText').value.trim();
       if (!text) { alert('Please write something!'); return; }
-      const list = document.getElementById('commentsList');
-      list.innerHTML = `
-      <div class="comment-item">
-        <div class="comment-header">
-          <div class="comment-avatar">U</div>
-          <div class="comment-user">You</div>
-          <div class="comment-date">Just now</div>
-        </div>
-        <div class="comment-text">${text}</div>
-      </div>` + list.innerHTML;
-      document.getElementById('commentText').value = '';
+      try {
+        const res = await fetch('/api/comment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ movie_id: imdbID, content: text })
+        });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('commentText').value = '';
+          loadComments();
+        } else {
+          alert('Please login to comment!');
+        }
+      } catch (e) { alert('Please login to comment!'); }
+    }
+
+    async function loadComments() {
+      try {
+        const res = await fetch(`/api/comments/${imdbID}`);
+        const data = await res.json();
+        const list = document.getElementById('commentsList');
+        if (!data.comments.length) {
+          list.innerHTML = '<div class="comment-item"><div class="comment-text">Be the first to comment! 🎬</div></div>';
+          return;
+        }
+        list.innerHTML = data.comments.map(c => `
+          <div class="comment-item">
+            <div class="comment-header">
+              <div class="comment-avatar">${c.username[0].toUpperCase()}</div>
+              <div class="comment-user">${c.username}</div>
+              <div class="comment-date">${c.date}</div>
+            </div>
+            <div class="comment-text">${c.content}</div>
+          </div>`).join('');
+      } catch (e) { }
     }
     async function toggleWatchlist() {
       const btn = document.getElementById('watchlistBtn');
@@ -1106,9 +1130,7 @@
     }
 
     // Init
-    loadMovie();
-
-    // Init
+    loadComments();
     loadMovie();
   </script>
 </body>
