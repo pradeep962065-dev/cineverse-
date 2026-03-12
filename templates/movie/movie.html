@@ -813,6 +813,14 @@
   <nav>
     <a href="/" class="nav-brand">CineVerse</a>
     <a href="/" class="nav-back">← Back to Home</a>
+    <div style="display:flex; align-items:center; gap:16px;">
+      {% if current_user.is_authenticated %}
+      <span style="font-size:13px; color: var(--gold);">👤 {{ current_user.username }}</span>
+      <a href="/logout" style="font-size:13px; color:var(--muted); text-decoration:none;">Logout</a>
+      {% else %}
+      <a href="/login" style="font-size:13px; color:var(--muted); text-decoration:none;">Login</a>
+      {% endif %}
+    </div>
     <button id="watchlistBtn" onclick="toggleWatchlist()"
       style="padding:8px 20px; border-radius:6px; font-size:13px; background:transparent; border:1px solid var(--gold); color:var(--gold); cursor:pointer; transition:all 0.2s;">+
       Watchlist</button>

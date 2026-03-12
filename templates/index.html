@@ -538,8 +538,14 @@
       <a href="/dashboard">My List</a>
     </div>
     <div class="nav-right">
+      {% if current_user.is_authenticated %}
+      <span style="font-size:13px; color: var(--gold);">👤 {{ current_user.username }}</span>
+      <a href="/dashboard" class="btn-nav btn-outline">Dashboard</a>
+      <a href="/logout" class="btn-nav btn-gold">Logout</a>
+      {% else %}
       <a href="/login" class="btn-nav btn-outline">Login</a>
       <a href="/register" class="btn-nav btn-gold">Sign Up</a>
+      {% endif %}
     </div>
   </nav>
 
