@@ -31,11 +31,23 @@ def register():
         new_user = User(
             username=username,
             email=email,
-            password=generate_password_hash(password)
+            password=generate_password_hash(password),
+            is_verified=False
         )
         db.session.add(new_user)
         db.session.commit()
-        flash('Account created! Please login.', 'success')
+
+        # Send verification email
+        from itsdangerous import URLSafeTimedSerializer
+        from flask_mail import Message
+        s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+        token = s.dumps(email, salt='email-verify')
+        verify_url = url_for('verify_email', token=token, _external=True)
+        msg = Message('Verify your CineVerse account', sender='pradeep962065@gmail.com', recipients=[email])
+        msg.body = f'Click this link to verify your account: {verify_url}'
+        mail.send(msg)
+
+        flash('Account created! Please check your email to verify.', 'success')
         return redirect(url_for('login'))
     return render_template('auth/register.html')
 
@@ -47,6 +59,9 @@ def login():
         password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
         if user and check_password_hash(user.password, password):
+            if not user.is_verified:
+                flash('Please verify your email first!', 'error')
+                return redirect(url_for('login'))
             login_user(user)
             return redirect(url_for('dashboard'))
         else:
@@ -286,6 +301,45 @@ def get_comments(imdb_id):
             'date': c.created_at.strftime('%b %d, %Y')
         })
     return jsonify({'comments': result})
+
+# Forgot Password
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+        if user:
+            from itsdangerous import URLSafeTimedSerializer
+            from flask_mail import Message
+            s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+            token = s.dumps(email, salt='password-reset')
+            reset_url = url_for('reset_password', token=token, _external=True)
+            msg = Message('Reset your CineVerse password', sender='pradeep962065@gmail.com', recipients=[email])
+            msg.body = f'Click this link to reset your password: {reset_url}'
+            mail.send(msg)
+        flash('If that email exists, a reset link has been sent!', 'success')
+        return redirect(url_for('login'))
+    return render_template('auth/forgot_password.html')
+
+# Reset Password
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+    s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    try:
+        email = s.loads(token, salt='password-reset', max_age=3600)
+    except SignatureExpired:
+        flash('Reset link expired!', 'error')
+        return redirect(url_for('forgot_password'))
+    if request.method == 'POST':
+        password = request.form.get('password')
+        user = User.query.filter_by(email=email).first()
+        if user:
+            user.password = generate_password_hash(password)
+            db.session.commit()
+            flash('Password reset! Please login.', 'success')
+            return redirect(url_for('login'))
+    return render_template('auth/reset_password.html', token=token)
 
 # Email Verification
 @app.route('/verify/<token>')
