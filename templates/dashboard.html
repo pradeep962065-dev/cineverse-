@@ -1,295 +1,792 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CineVerse – Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #07090e; --surface: #0d1017; --card: #111520; --card2: #161b27;
-      --border: rgba(255,255,255,0.06); --gold: #e8b84b; --gold-dim: #9a7520;
-      --text: #e8e6e0; --muted: #5a5d68;
-      --red: #e74c3c; --yellow: #f39c12; --green: #27ae60; --blue: #3498db; --purple: #9b59b6;
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-    html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+    :root {
+      --bg: #07090e;
+      --surface: #0d1017;
+      --card: #111520;
+      --card2: #161b27;
+      --border: rgba(255, 255, 255, 0.06);
+      --gold: #e8b84b;
+      --gold-dim: #9a7520;
+      --text: #e8e6e0;
+      --muted: #5a5d68;
+      --red: #e74c3c;
+      --yellow: #f39c12;
+      --green: #27ae60;
+      --blue: #3498db;
+      --purple: #9b59b6;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+
     body::before {
-      content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
       opacity: 0.4;
     }
 
     /* NAV */
     nav {
-      position: sticky; top: 0; z-index: 100;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 48px; height: 64px;
-      background: rgba(7,9,14,0.85); backdrop-filter: blur(16px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
+      background: rgba(7, 9, 14, 0.85);
+      backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
     }
+
     .nav-brand {
-      font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 3px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 3px;
       background: linear-gradient(135deg, var(--gold), #fff5c0);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text; text-decoration: none;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-decoration: none;
     }
-    .nav-links { display: flex; align-items: center; gap: 32px; }
-    .nav-links a { font-size: 13px; color: var(--muted); text-decoration: none; letter-spacing: 1px; text-transform: uppercase; transition: color 0.2s; }
-    .nav-links a:hover, .nav-links a.active { color: var(--gold); }
-    .nav-right { display: flex; align-items: center; gap: 16px; }
-    .btn-nav { padding: 8px 20px; border-radius: 6px; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s; text-decoration: none; }
-    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
-    .btn-outline:hover { border-color: var(--red); color: var(--red); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--gold);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .btn-nav {
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
 
     /* DASHBOARD LAYOUT */
-    .dash-wrap { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 48px 48px; }
+    .dash-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 48px 48px;
+    }
 
     /* PROFILE HEADER */
     .profile-header {
-      display: flex; align-items: center; gap: 32px;
-      padding: 36px; background: var(--card);
-      border: 1px solid var(--border); border-radius: 16px;
-      margin-bottom: 32px; animation: fadeUp 0.6s ease both;
-      position: relative; overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      padding: 36px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 32px;
+      animation: fadeUp 0.6s ease both;
+      position: relative;
+      overflow: hidden;
     }
+
     .profile-header::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
       background: linear-gradient(90deg, var(--gold), var(--gold-dim), transparent);
     }
+
     .avatar {
-      width: 80px; height: 80px; border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
       background: linear-gradient(135deg, var(--gold), #c9962a);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: #0a0800;
-      flex-shrink: 0; box-shadow: 0 0 32px rgba(232,184,75,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      color: #0a0800;
+      flex-shrink: 0;
+      box-shadow: 0 0 32px rgba(232, 184, 75, 0.3);
     }
-    .profile-info { flex: 1; }
-    .profile-name { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 2px; color: var(--text); }
-    .profile-email { font-size: 13px; color: var(--muted); margin-top: 4px; }
-    .profile-joined { font-size: 12px; color: var(--muted); margin-top: 8px; letter-spacing: 1px; text-transform: uppercase; }
-    .profile-stats { display: flex; gap: 32px; }
-    .pstat { text-align: center; }
-    .pstat-num { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--gold); }
-    .pstat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      letter-spacing: 2px;
+      color: var(--text);
+    }
+
+    .profile-email {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .profile-joined {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 32px;
+    }
+
+    .pstat {
+      text-align: center;
+    }
+
+    .pstat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      color: var(--gold);
+    }
+
+    .pstat-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
 
     /* TABS */
-    .tabs { display: flex; gap: 4px; margin-bottom: 28px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 4px; animation: fadeUp 0.6s 0.1s ease both; }
-    .tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); cursor: pointer; border-radius: 8px; transition: all 0.2s; border: none; background: none; font-family: 'DM Sans', sans-serif; }
-    .tab.active { background: var(--card2); color: var(--gold); }
-    .tab:hover:not(.active) { color: var(--text); }
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 28px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 4px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+      border: none;
+      background: none;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .tab.active {
+      background: var(--card2);
+      color: var(--gold);
+    }
+
+    .tab:hover:not(.active) {
+      color: var(--text);
+    }
 
     /* TAB CONTENT */
-    .tab-content { display: none; animation: fadeUp 0.4s ease both; }
-    .tab-content.active { display: block; }
+    .tab-content {
+      display: none;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
 
     /* SECTION TITLE */
-    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--text); margin-bottom: 20px; }
-    .section-title span { color: var(--gold); }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 2px;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+
+    .section-title span {
+      color: var(--gold);
+    }
 
     /* EMPTY STATE */
-    .empty { text-align: center; padding: 60px; color: var(--muted); background: var(--card); border: 1px solid var(--border); border-radius: 12px; }
-    .empty-icon { font-size: 48px; margin-bottom: 16px; }
-    .empty-text { font-size: 14px; margin-bottom: 20px; }
-    .btn-gold { padding: 12px 28px; background: linear-gradient(135deg, var(--gold), #c9962a); border: none; border-radius: 8px; font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 1px; color: #0a0800; cursor: pointer; text-decoration: none; display: inline-block; transition: filter 0.2s, transform 0.2s; }
-    .btn-gold:hover { filter: brightness(1.1); transform: translateY(-2px); }
+    .empty {
+      text-align: center;
+      padding: 60px;
+      color: var(--muted);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .empty-text {
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .btn-gold {
+      padding: 12px 28px;
+      background: linear-gradient(135deg, var(--gold), #c9962a);
+      border: none;
+      border-radius: 8px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 15px;
+      letter-spacing: 1px;
+      color: #0a0800;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: filter 0.2s, transform 0.2s;
+    }
+
+    .btn-gold:hover {
+      filter: brightness(1.1);
+      transform: translateY(-2px);
+    }
 
     /* RATINGS GRID */
-    .ratings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .ratings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
     .rating-card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-      padding: 16px; display: flex; align-items: center; gap: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
       transition: border-color 0.2s, transform 0.2s;
     }
-    .rating-card:hover { border-color: rgba(232,184,75,0.3); transform: translateY(-2px); }
-    .rating-poster { width: 48px; height: 68px; border-radius: 6px; object-fit: cover; background: var(--card2); flex-shrink: 0; }
-    .rating-poster-placeholder { width: 48px; height: 68px; border-radius: 6px; background: var(--card2); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-    .rating-info { flex: 1; min-width: 0; }
-    .rating-title { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .rating-year { font-size: 12px; color: var(--muted); margin-top: 2px; }
-    .rating-badge { margin-top: 8px; display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; letter-spacing: 0.5px; }
-    .badge-skip { background: rgba(231,76,60,0.15); color: var(--red); border: 1px solid rgba(231,76,60,0.3); }
-    .badge-timepass { background: rgba(243,156,18,0.15); color: var(--yellow); border: 1px solid rgba(243,156,18,0.3); }
-    .badge-goforit { background: rgba(39,174,96,0.15); color: var(--green); border: 1px solid rgba(39,174,96,0.3); }
-    .badge-perfection { background: rgba(52,152,219,0.15); color: var(--blue); border: 1px solid rgba(52,152,219,0.3); }
+
+    .rating-card:hover {
+      border-color: rgba(232, 184, 75, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .rating-poster {
+      width: 48px;
+      height: 68px;
+      border-radius: 6px;
+      object-fit: cover;
+      background: var(--card2);
+      flex-shrink: 0;
+    }
+
+    .rating-poster-placeholder {
+      width: 48px;
+      height: 68px;
+      border-radius: 6px;
+      background: var(--card2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .rating-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .rating-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rating-year {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .rating-badge {
+      margin-top: 8px;
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-skip {
+      background: rgba(231, 76, 60, 0.15);
+      color: var(--red);
+      border: 1px solid rgba(231, 76, 60, 0.3);
+    }
+
+    .badge-timepass {
+      background: rgba(243, 156, 18, 0.15);
+      color: var(--yellow);
+      border: 1px solid rgba(243, 156, 18, 0.3);
+    }
+
+    .badge-goforit {
+      background: rgba(39, 174, 96, 0.15);
+      color: var(--green);
+      border: 1px solid rgba(39, 174, 96, 0.3);
+    }
+
+    .badge-perfection {
+      background: rgba(52, 152, 219, 0.15);
+      color: var(--blue);
+      border: 1px solid rgba(52, 152, 219, 0.3);
+    }
 
     /* VIBE CARDS */
-    .vibe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-    .vibe-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: border-color 0.2s; }
-    .vibe-card:hover { border-color: rgba(232,184,75,0.3); }
-    .vibe-card-title { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
-    .vibe-card-year { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
-    .vibe-bars { display: flex; flex-direction: column; gap: 8px; }
-    .vibe-bar-row { display: flex; align-items: center; gap: 10px; }
-    .vibe-bar-label { font-size: 11px; color: var(--muted); width: 60px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .vibe-bar-bg { flex: 1; height: 6px; background: var(--card2); border-radius: 3px; overflow: hidden; }
-    .vibe-bar-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
-    .vibe-bar-pct { font-size: 11px; color: var(--muted); width: 32px; text-align: right; }
+    .vibe-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .vibe-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .vibe-card:hover {
+      border-color: rgba(232, 184, 75, 0.3);
+    }
+
+    .vibe-card-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .vibe-card-year {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    .vibe-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .vibe-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .vibe-bar-label {
+      font-size: 11px;
+      color: var(--muted);
+      width: 60px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .vibe-bar-bg {
+      flex: 1;
+      height: 6px;
+      background: var(--card2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .vibe-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.8s ease;
+    }
+
+    .vibe-bar-pct {
+      font-size: 11px;
+      color: var(--muted);
+      width: 32px;
+      text-align: right;
+    }
 
     /* WATCHLIST */
-    .watchlist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
-    .wl-card { position: relative; border-radius: 10px; overflow: hidden; background: var(--card); border: 1px solid var(--border); cursor: pointer; transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s; }
-    .wl-card:hover { transform: translateY(-6px); box-shadow: 0 20px 48px rgba(0,0,0,0.6); border-color: rgba(232,184,75,0.3); }
-    .wl-poster { width: 100%; aspect-ratio: 2/3; object-fit: cover; display: block; }
-    .wl-poster-placeholder { width: 100%; aspect-ratio: 2/3; background: var(--card2); display: flex; align-items: center; justify-content: center; font-size: 32px; }
-    .wl-info { padding: 10px; }
-    .wl-title { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .wl-year { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .wl-remove { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; background: rgba(231,76,60,0.8); border: none; color: white; font-size: 14px; cursor: pointer; display: none; align-items: center; justify-content: center; transition: background 0.2s; }
-    .wl-card:hover .wl-remove { display: flex; }
-    .wl-remove:hover { background: var(--red); }
+    .watchlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 20px;
+    }
+
+    .wl-card {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--card);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    }
+
+    .wl-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
+      border-color: rgba(232, 184, 75, 0.3);
+    }
+
+    .wl-poster {
+      width: 100%;
+      aspect-ratio: 2/3;
+      object-fit: cover;
+      display: block;
+    }
+
+    .wl-poster-placeholder {
+      width: 100%;
+      aspect-ratio: 2/3;
+      background: var(--card2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+    }
+
+    .wl-info {
+      padding: 10px;
+    }
+
+    .wl-title {
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .wl-year {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .wl-remove {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(231, 76, 60, 0.8);
+      border: none;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .wl-card:hover .wl-remove {
+      display: flex;
+    }
+
+    .wl-remove:hover {
+      background: var(--red);
+    }
 
     /* LOADING */
-    .loading { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 40px; color: var(--muted); }
-    .spinner { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); border-top-color: var(--gold); animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 40px;
+      color: var(--muted);
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      border-top-color: var(--gold);
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
     @media(max-width: 768px) {
-      nav { padding: 0 20px; }
-      .nav-links { display: none; }
-      .dash-wrap { padding: 24px 20px; }
-      .profile-header { flex-direction: column; text-align: center; }
-      .profile-stats { justify-content: center; }
-      .tabs { flex-wrap: wrap; }
+      nav {
+        padding: 0 20px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .dash-wrap {
+        padding: 24px 20px;
+      }
+
+      .profile-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .profile-stats {
+        justify-content: center;
+      }
+
+      .tabs {
+        flex-wrap: wrap;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<nav>
-  <a href="/" class="nav-brand">CineVerse</a>
-  <div class="nav-links">
-    <a href="/">Home</a>
-    <a href="/dashboard" class="active">Dashboard</a>
-  </div>
-  <div class="nav-right">
-    <a href="/logout" class="btn-nav btn-outline">Logout</a>
-  </div>
-</nav>
-
-<div class="dash-wrap">
-
-  <!-- PROFILE HEADER -->
-  <div class="profile-header">
-    <div class="avatar" id="avatarEl">?</div>
-    <div class="profile-info">
-      <div class="profile-name" id="profileName">Loading...</div>
-      <div class="profile-email" id="profileEmail"></div>
-      <div class="profile-joined" id="profileJoined"></div>
+  <nav>
+    <a href="/" class="nav-brand">CineVerse</a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/dashboard" class="active">Dashboard</a>
     </div>
-    <div class="profile-stats">
-      <div class="pstat">
-        <div class="pstat-num" id="totalRatings">0</div>
-        <div class="pstat-label">Ratings</div>
+    <div class="nav-right">
+      {% if current_user.is_authenticated %}
+      <span style="font-size:13px; color: var(--gold);">👤 {{ current_user.username }}</span>
+      {% endif %}
+      <a href="/logout" class="btn-nav btn-outline">Logout</a>
+    </div>
+  </nav>
+
+  <div class="dash-wrap">
+
+    <!-- PROFILE HEADER -->
+    <div class="profile-header">
+      <div class="avatar" id="avatarEl">?</div>
+      <div class="profile-info">
+        <div class="profile-name" id="profileName">Loading...</div>
+        <div class="profile-email" id="profileEmail"></div>
+        <div class="profile-joined" id="profileJoined"></div>
       </div>
-      <div class="pstat">
-        <div class="pstat-num" id="totalVibes">0</div>
-        <div class="pstat-label">Vibes</div>
+      <div class="profile-stats">
+        <div class="pstat">
+          <div class="pstat-num" id="totalRatings">0</div>
+          <div class="pstat-label">Ratings</div>
+        </div>
+        <div class="pstat">
+          <div class="pstat-num" id="totalVibes">0</div>
+          <div class="pstat-label">Vibes</div>
+        </div>
+        <div class="pstat">
+          <div class="pstat-num" id="totalWatchlist">0</div>
+          <div class="pstat-label">Watchlist</div>
+        </div>
       </div>
-      <div class="pstat">
-        <div class="pstat-num" id="totalWatchlist">0</div>
-        <div class="pstat-label">Watchlist</div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('ratings')">⭐ My Ratings</button>
+      <button class="tab" onclick="switchTab('vibes')">🎭 My Vibes</button>
+      <button class="tab" onclick="switchTab('watchlist')">🎬 Watchlist</button>
+    </div>
+
+    <!-- RATINGS TAB -->
+    <div class="tab-content active" id="tab-ratings">
+      <div class="section-title">My <span>Ratings</span></div>
+      <div id="ratingsContainer">
+        <div class="loading">
+          <div class="spinner"></div> Loading ratings...
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- TABS -->
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('ratings')">⭐ My Ratings</button>
-    <button class="tab" onclick="switchTab('vibes')">🎭 My Vibes</button>
-    <button class="tab" onclick="switchTab('watchlist')">🎬 Watchlist</button>
-  </div>
-
-  <!-- RATINGS TAB -->
-  <div class="tab-content active" id="tab-ratings">
-    <div class="section-title">My <span>Ratings</span></div>
-    <div id="ratingsContainer">
-      <div class="loading"><div class="spinner"></div> Loading ratings...</div>
+    <!-- VIBES TAB -->
+    <div class="tab-content" id="tab-vibes">
+      <div class="section-title">My <span>Vibes</span></div>
+      <div id="vibesContainer">
+        <div class="loading">
+          <div class="spinner"></div> Loading vibes...
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- VIBES TAB -->
-  <div class="tab-content" id="tab-vibes">
-    <div class="section-title">My <span>Vibes</span></div>
-    <div id="vibesContainer">
-      <div class="loading"><div class="spinner"></div> Loading vibes...</div>
+    <!-- WATCHLIST TAB -->
+    <div class="tab-content" id="tab-watchlist">
+      <div class="section-title">My <span>Watchlist</span></div>
+      <div id="watchlistContainer">
+        <div class="loading">
+          <div class="spinner"></div> Loading watchlist...
+        </div>
+      </div>
     </div>
+
   </div>
 
-  <!-- WATCHLIST TAB -->
-  <div class="tab-content" id="tab-watchlist">
-    <div class="section-title">My <span>Watchlist</span></div>
-    <div id="watchlistContainer">
-      <div class="loading"><div class="spinner"></div> Loading watchlist...</div>
-    </div>
-  </div>
-
-</div>
-
-<script>
-  // Tab switching
-  function switchTab(name) {
-    document.querySelectorAll('.tab').forEach((t, i) => {
-      t.classList.toggle('active', ['ratings','vibes','watchlist'][i] === name);
-    });
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    document.getElementById('tab-' + name).classList.add('active');
-  }
-
-  // Badge class based on rating
-  function badgeClass(val) {
-    if (val === 'Skip') return 'badge-skip';
-    if (val === 'Timepass') return 'badge-timepass';
-    if (val === 'Go for It') return 'badge-goforit';
-    if (val === 'Perfection') return 'badge-perfection';
-    return '';
-  }
-
-  // Vibe bar colors
-  const vibeColors = {
-    thriller: '#e74c3c', mystery: '#9b59b6',
-    drama: '#3498db', action: '#27ae60', romance: '#e91e8c'
-  };
-
-  // Load profile info
-  async function loadProfile() {
-    try {
-      const res = await fetch('/api/dashboard');
-      const data = await res.json();
-      if (data.user) {
-        const u = data.user;
-        document.getElementById('profileName').textContent = u.username || 'User';
-        document.getElementById('profileEmail').textContent = u.email || '';
-        document.getElementById('profileJoined').textContent = 'Member since ' + (u.joined || '');
-        document.getElementById('avatarEl').textContent = (u.username || 'U')[0].toUpperCase();
-        document.getElementById('totalRatings').textContent = data.ratings_count || 0;
-        document.getElementById('totalVibes').textContent = data.vibes_count || 0;
-        document.getElementById('totalWatchlist').textContent = data.watchlist_count || 0;
-      }
-    } catch(e) {
-      document.getElementById('profileName').textContent = 'Welcome!';
+  <script>
+    // Tab switching
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach((t, i) => {
+        t.classList.toggle('active', ['ratings', 'vibes', 'watchlist'][i] === name);
+      });
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.add('active');
     }
-  }
 
-  // Load ratings
-  async function loadRatings() {
-    const container = document.getElementById('ratingsContainer');
-    try {
-      const res = await fetch('/api/my-ratings');
-      const data = await res.json();
-      const ratings = data.ratings || [];
-      if (!ratings.length) {
-        container.innerHTML = `
+    // Badge class based on rating
+    function badgeClass(val) {
+      if (val === 'Skip') return 'badge-skip';
+      if (val === 'Timepass') return 'badge-timepass';
+      if (val === 'Go for It') return 'badge-goforit';
+      if (val === 'Perfection') return 'badge-perfection';
+      return '';
+    }
+
+    // Vibe bar colors
+    const vibeColors = {
+      thriller: '#e74c3c', mystery: '#9b59b6',
+      drama: '#3498db', action: '#27ae60', romance: '#e91e8c'
+    };
+
+    // Load profile info
+    async function loadProfile() {
+      try {
+        const res = await fetch('/api/dashboard');
+        const data = await res.json();
+        if (data.user) {
+          const u = data.user;
+          document.getElementById('profileName').textContent = u.username || 'User';
+          document.getElementById('profileEmail').textContent = u.email || '';
+          document.getElementById('profileJoined').textContent = 'Member since ' + (u.joined || '');
+          document.getElementById('avatarEl').textContent = (u.username || 'U')[0].toUpperCase();
+          document.getElementById('totalRatings').textContent = data.ratings_count || 0;
+          document.getElementById('totalVibes').textContent = data.vibes_count || 0;
+          document.getElementById('totalWatchlist').textContent = data.watchlist_count || 0;
+        }
+      } catch (e) {
+        document.getElementById('profileName').textContent = 'Welcome!';
+      }
+    }
+
+    // Load ratings
+    async function loadRatings() {
+      const container = document.getElementById('ratingsContainer');
+      try {
+        const res = await fetch('/api/my-ratings');
+        const data = await res.json();
+        const ratings = data.ratings || [];
+        if (!ratings.length) {
+          container.innerHTML = `
           <div class="empty">
             <div class="empty-icon">⭐</div>
             <div class="empty-text">You haven't rated any movies yet!</div>
             <a href="/" class="btn-gold">Discover Movies</a>
           </div>`;
-        return;
-      }
-      container.innerHTML = `<div class="ratings-grid">${ratings.map(r => `
+          return;
+        }
+        container.innerHTML = `<div class="ratings-grid">${ratings.map(r => `
         <div class="rating-card" onclick="window.location.href='/movie/${r.movie_id}'">
           ${r.poster && r.poster !== 'N/A'
             ? `<img class="rating-poster" src="${r.poster}" alt="${r.title}"/>`
@@ -300,62 +797,62 @@
             <div class="rating-badge ${badgeClass(r.meter_value)}">${r.meter_value}</div>
           </div>
         </div>`).join('')}</div>`;
-    } catch(e) {
-      container.innerHTML = `<div class="empty"><div class="empty-icon">⭐</div><div class="empty-text">No ratings yet.</div><a href="/" class="btn-gold">Discover Movies</a></div>`;
+      } catch (e) {
+        container.innerHTML = `<div class="empty"><div class="empty-icon">⭐</div><div class="empty-text">No ratings yet.</div><a href="/" class="btn-gold">Discover Movies</a></div>`;
+      }
     }
-  }
 
-  // Load vibes
-  async function loadVibes() {
-    const container = document.getElementById('vibesContainer');
-    try {
-      const res = await fetch('/api/my-vibes');
-      const data = await res.json();
-      const vibes = data.vibes || [];
-      if (!vibes.length) {
-        container.innerHTML = `
+    // Load vibes
+    async function loadVibes() {
+      const container = document.getElementById('vibesContainer');
+      try {
+        const res = await fetch('/api/my-vibes');
+        const data = await res.json();
+        const vibes = data.vibes || [];
+        if (!vibes.length) {
+          container.innerHTML = `
           <div class="empty">
             <div class="empty-icon">🎭</div>
             <div class="empty-text">You haven't set any vibes yet!</div>
             <a href="/" class="btn-gold">Discover Movies</a>
           </div>`;
-        return;
-      }
-      container.innerHTML = `<div class="vibe-grid">${vibes.map(v => `
+          return;
+        }
+        container.innerHTML = `<div class="vibe-grid">${vibes.map(v => `
         <div class="vibe-card" onclick="window.location.href='/movie/${v.movie_id}'">
           <div class="vibe-card-title">${v.title || v.movie_id}</div>
           <div class="vibe-card-year">${v.year || ''}</div>
           <div class="vibe-bars">
-            ${['thriller','mystery','drama','action','romance'].map(genre => `
+            ${['thriller', 'mystery', 'drama', 'action', 'romance'].map(genre => `
               <div class="vibe-bar-row">
                 <div class="vibe-bar-label">${genre}</div>
-                <div class="vibe-bar-bg"><div class="vibe-bar-fill" style="width:${v[genre]||0}%;background:${vibeColors[genre]}"></div></div>
-                <div class="vibe-bar-pct">${v[genre]||0}%</div>
+                <div class="vibe-bar-bg"><div class="vibe-bar-fill" style="width:${v[genre] || 0}%;background:${vibeColors[genre]}"></div></div>
+                <div class="vibe-bar-pct">${v[genre] || 0}%</div>
               </div>`).join('')}
           </div>
         </div>`).join('')}</div>`;
-    } catch(e) {
-      container.innerHTML = `<div class="empty"><div class="empty-icon">🎭</div><div class="empty-text">No vibes yet.</div><a href="/" class="btn-gold">Discover Movies</a></div>`;
+      } catch (e) {
+        container.innerHTML = `<div class="empty"><div class="empty-icon">🎭</div><div class="empty-text">No vibes yet.</div><a href="/" class="btn-gold">Discover Movies</a></div>`;
+      }
     }
-  }
 
-  // Load watchlist
-  async function loadWatchlist() {
-    const container = document.getElementById('watchlistContainer');
-    try {
-      const res = await fetch('/api/my-watchlist');
-      const data = await res.json();
-      const movies = data.movies || [];
-      if (!movies.length) {
-        container.innerHTML = `
+    // Load watchlist
+    async function loadWatchlist() {
+      const container = document.getElementById('watchlistContainer');
+      try {
+        const res = await fetch('/api/my-watchlist');
+        const data = await res.json();
+        const movies = data.movies || [];
+        if (!movies.length) {
+          container.innerHTML = `
           <div class="empty">
             <div class="empty-icon">🎬</div>
             <div class="empty-text">Your watchlist is empty!</div>
             <a href="/" class="btn-gold">Discover Movies</a>
           </div>`;
-        return;
-      }
-      container.innerHTML = `<div class="watchlist-grid">${movies.map(m => `
+          return;
+        }
+        container.innerHTML = `<div class="watchlist-grid">${movies.map(m => `
         <div class="wl-card" onclick="window.location.href='/movie/${m.imdbID}'">
           ${m.Poster && m.Poster !== 'N/A'
             ? `<img class="wl-poster" src="${m.Poster}" alt="${m.Title}"/>`
@@ -366,21 +863,22 @@
             <div class="wl-year">${m.Year}</div>
           </div>
         </div>`).join('')}</div>`;
-    } catch(e) {
-      container.innerHTML = `<div class="empty"><div class="empty-icon">🎬</div><div class="empty-text">Watchlist empty.</div><a href="/" class="btn-gold">Discover Movies</a></div>`;
+      } catch (e) {
+        container.innerHTML = `<div class="empty"><div class="empty-icon">🎬</div><div class="empty-text">Watchlist empty.</div><a href="/" class="btn-gold">Discover Movies</a></div>`;
+      }
     }
-  }
 
-  async function removeFromWatchlist(imdbId) {
-    await fetch('/api/watchlist/remove', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({movie_id: imdbId}) });
+    async function removeFromWatchlist(imdbId) {
+      await fetch('/api/watchlist/remove', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ movie_id: imdbId }) });
+      loadWatchlist();
+    }
+
+    // Init
+    loadProfile();
+    loadRatings();
+    loadVibes();
     loadWatchlist();
-  }
-
-  // Init
-  loadProfile();
-  loadRatings();
-  loadVibes();
-  loadWatchlist();
-</script>
+  </script>
 </body>
+
 </html>
