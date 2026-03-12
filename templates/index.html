@@ -498,6 +498,19 @@
         padding: 0 20px;
       }
 
+      .nav-right {
+        gap: 8px;
+      }
+
+      .nav-right span {
+        font-size: 11px !important;
+      }
+
+      .btn-nav {
+        padding: 6px 10px;
+        font-size: 11px;
+      }
+
       .nav-links {
         display: none;
       }
@@ -518,6 +531,15 @@
       .movie-grid {
         grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
         gap: 12px;
+      }
+
+      .search-input {
+        font-size: 13px;
+      }
+
+      .search-btn {
+        padding: 14px 16px;
+        font-size: 13px;
       }
 
       footer {
@@ -554,8 +576,8 @@
     <h1 class="hero-title">Find Your Next<br><span>Favourite Film</span></h1>
     <p class="hero-sub">Rate with Moctale Meter. Explore Vibe Charts. Discover where to stream.</p>
     <div class="search-wrap">
-      <input type="text" class="search-input" id="searchInput"
-        placeholder="Search any movie... e.g. Inception, RRR, Interstellar" autocomplete="off" />
+      <input type="text" class="search-input" id="searchInput" placeholder="Search any movie... e.g. Inception, RRR..."
+        autocomplete="off" />
       <button class="search-btn" onclick="searchMovies()">SEARCH</button>
     </div>
   </section>
