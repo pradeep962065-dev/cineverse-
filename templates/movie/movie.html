@@ -704,6 +704,106 @@
         padding: 0 20px;
       }
     }
+
+    /* ── RATING POPUP ── */
+    .rating-popup-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .rating-popup {
+      background: var(--card);
+      border: 1px solid var(--gold);
+      border-radius: 16px;
+      padding: 40px 48px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(232, 184, 75, 0.2);
+      animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .rating-popup .stars {
+      font-size: 36px;
+      letter-spacing: 4px;
+      margin-bottom: 16px;
+      animation: starBounce 0.6s ease;
+    }
+
+    .rating-popup .popup-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 3px;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .rating-popup .popup-sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .rating-popup .popup-close {
+      padding: 10px 32px;
+      background: linear-gradient(135deg, var(--gold), #c9962a);
+      border: none;
+      border-radius: 8px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 16px;
+      letter-spacing: 1px;
+      color: #0a0800;
+      cursor: pointer;
+    }
+
+    .error-popup {
+      border-color: #e74c3c;
+      box-shadow: 0 0 40px rgba(231, 76, 60, 0.2);
+    }
+
+    .error-popup .popup-title {
+      color: #e74c3c;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    @keyframes popUp {
+      from {
+        opacity: 0;
+        transform: scale(0.7)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1)
+      }
+    }
+
+    @keyframes starBounce {
+      0% {
+        transform: scale(0);
+      }
+
+      60% {
+        transform: scale(1.3);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
   </style>
 </head>
 
@@ -1033,10 +1133,10 @@
         });
         const data = await res.json();
         if (data.success) {
-          alert(`✅ Rated as "${selectedRating}"!`);
+          showRatingPopup(selectedRating);
           loadMoctaleResults();
         } else {
-          alert(data.message || 'Please login to rate!');
+          showErrorPopup(data.message || 'Please login to rate!');
         }
       } catch (e) { alert('Please login to rate!'); }
     }
@@ -1066,7 +1166,11 @@
           body: JSON.stringify({ movie_id: imdbID, ...vibe })
         });
         const data = await res.json();
-        alert(data.success ? '✅ Vibe Chart submitted!' : (data.message || 'Please login first!'));
+        if (data.success) {
+          showRatingPopup('Vibe');
+        } else {
+          showErrorPopup(data.message || 'Please login first!');
+        }
       } catch (e) { alert('Please login to submit vibe!'); }
     }
 
@@ -1128,7 +1232,34 @@
         }
       } catch (e) { alert('Please login to add to watchlist!'); }
     }
+    function showRatingPopup(rating) {
+      const icons = { 'Skip': '💔', 'Timepass': '😐', 'Go for It': '👍', 'Perfection': '🏆', 'Vibe': '🎨' };
+      const overlay = document.createElement('div');
+      overlay.className = 'rating-popup-overlay';
+      overlay.innerHTML = `
+    <div class="rating-popup">
+      <div class="stars">⭐⭐⭐⭐⭐</div>
+     <div class="popup-title">${rating === 'Vibe' ? 'Vibe Saved!' : 'Rating Saved!'}</div>
+      <div class="popup-sub">${icons[rating]} You rated this movie as <strong style="color:var(--gold)">${rating}</strong></div>
+      <button class="popup-close" onclick="this.closest('.rating-popup-overlay').remove()">AWESOME!</button>
+    </div>`;
+      document.body.appendChild(overlay);
+      overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+    }
 
+    function showErrorPopup(msg) {
+      const overlay = document.createElement('div');
+      overlay.className = 'rating-popup-overlay';
+      overlay.innerHTML = `
+    <div class="rating-popup error-popup">
+      <div class="stars">🚫</div>
+      <div class="popup-title">Oops!</div>
+      <div class="popup-sub">${msg}</div>
+      <button class="popup-close" style="background:linear-gradient(135deg,#e74c3c,#c0392b)" onclick="this.closest('.rating-popup-overlay').remove()">OK</button>
+    </div>`;
+      document.body.appendChild(overlay);
+      overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+    }
     // Init
     loadComments();
     loadMovie();

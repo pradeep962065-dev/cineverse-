@@ -587,6 +587,30 @@
     </div>
   </section>
 
+  <section class="section">
+    <div class="section-header">
+      <div class="section-title">🎭 Award <span>Winner</span></div>
+      <div class="section-line"></div>
+    </div>
+    <div class="movie-grid" id="kannadaGrid">
+      <div class="loading">
+        <div class="spinner"></div> Loading movies...
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-header">
+      <div class="section-title">🌟 World <span>Cinema</span></div>
+      <div class="section-line"></div>
+    </div>
+    <div class="movie-grid" id="panIndiaGrid">
+      <div class="loading">
+        <div class="spinner"></div> Loading movies...
+      </div>
+    </div>
+  </section>
+
   <div class="stats-bar">
     <div class="stat">
       <div class="stat-num">10K+</div>
@@ -614,12 +638,20 @@
   <script>
     // Trending movies - using IMDB IDs directly (faster, no search needed)
     const TRENDING_IDS = [
-      'tt1375666', 'tt0816692', 'tt0468569', 'tt4154796',
-      'tt8108198', 'tt8579674', 'tt7838252', 'tt6857112'
+      'tt9362722', 'tt1630029', 'tt15239678', 'tt9376612',
+      'tt14998742', 'tt11280740', 'tt10366206', 'tt13238346'
     ];
     const TOP_RATED_IDS = [
-      'tt0068646', 'tt0108052', 'tt0050083', 'tt0137523',
-      'tt0120338', 'tt0133093', 'tt0099685', 'tt0076759'
+      'tt0068646', 'tt0111161', 'tt0468569', 'tt0137523',
+      'tt0816692', 'tt1375666', 'tt0133093', 'tt4154796'
+    ];
+    const KANNADA_IDS = [
+      'tt0114369', 'tt0317248', 'tt0361748', 'tt0407887',
+      'tt1375666', 'tt0468569', 'tt0816692', 'tt4154796'
+    ];
+    const PAN_INDIA_IDS = [
+      'tt0120737', 'tt0167260', 'tt0080684', 'tt0076759',
+      'tt0245429', 'tt0266543', 'tt0435761', 'tt0033467'
     ];
 
     function movieCard(movie) {
@@ -705,6 +737,8 @@
     // Load grids using IMDB IDs directly - much faster!
     loadGrid(TRENDING_IDS, 'trendingGrid');
     loadGrid(TOP_RATED_IDS, 'topRatedGrid');
+    loadGrid(KANNADA_IDS, 'kannadaGrid');
+    loadGrid(PAN_INDIA_IDS, 'panIndiaGrid');
   </script>
 </body>
 
