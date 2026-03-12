@@ -95,6 +95,18 @@ def api_ratings(imdb_id):
             results[r.meter_value] += 1
     return jsonify({'results': results})
 
+    # API Get User's Rating
+@app.route('/api/my-rating/<imdb_id>')
+@login_required
+def api_my_rating(imdb_id):
+    rating = MoctaleRating.query.filter_by(
+        user_id=current_user.user_id,
+        movie_id=imdb_id
+    ).first()
+    if rating:
+        return jsonify({'rated': True, 'meter_value': rating.meter_value})
+    return jsonify({'rated': False, 'meter_value': None})
+
 # API Rate Movie
 @app.route('/api/rate', methods=['POST'])
 @login_required
@@ -114,6 +126,17 @@ def api_rate():
     db.session.add(rating)
     db.session.commit()
     return jsonify({'success': True})
+    # API Get User's Vibe
+@app.route('/api/my-vibe/<imdb_id>')
+@login_required
+def api_my_vibe(imdb_id):
+    vibe = VibeChart.query.filter_by(
+        user_id=current_user.user_id,
+        movie_id=imdb_id
+    ).first()
+    if vibe:
+        return jsonify({'vibed': True, 'action': vibe.action, 'romance': vibe.romance, 'comedy': vibe.comedy, 'thriller': vibe.thriller, 'drama': vibe.drama})
+    return jsonify({'vibed': False})
 
 # API Vibe Chart
 @app.route('/api/vibe', methods=['POST'])

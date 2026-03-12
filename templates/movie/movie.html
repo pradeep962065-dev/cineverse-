@@ -1268,9 +1268,46 @@
       document.body.appendChild(overlay);
       overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
     }
+    async function loadUserVibe() {
+      try {
+        const res = await fetch(`/api/my-vibe/${imdbID}`);
+        const data = await res.json();
+        if (data.vibed) {
+          document.getElementById('action').value = data.action;
+          document.getElementById('romance').value = data.romance;
+          document.getElementById('comedy').value = data.comedy;
+          document.getElementById('thriller').value = data.thriller;
+          document.getElementById('drama').value = data.drama;
+          updateVibe();
+          document.querySelector('.submit-vibe').textContent = 'Already Submitted ✅';
+          document.querySelector('.submit-vibe').style.opacity = '0.6';
+          document.querySelector('.submit-vibe').style.cursor = 'not-allowed';
+        }
+      } catch (e) { }
+    }
+    async function loadUserRating() {
+      try {
+        const res = await fetch(`/api/my-rating/${imdbID}`);
+        const data = await res.json();
+        if (data.rated) {
+          selectedRating = data.meter_value;
+          document.querySelectorAll('.moctale-btn').forEach(btn => {
+            const label = btn.querySelector('.moctale-label').textContent.trim();
+            if (label === data.meter_value) {
+              btn.classList.add('selected');
+            }
+          });
+          document.querySelector('.submit-rating').textContent = 'Already Rated ✅';
+          document.querySelector('.submit-rating').style.opacity = '0.6';
+          document.querySelector('.submit-rating').style.cursor = 'not-allowed';
+        }
+      } catch (e) { }
+    }
     // Init
     loadComments();
     loadMovie();
+    loadUserRating();
+    loadUserVibe();
   </script>
 </body>
 
