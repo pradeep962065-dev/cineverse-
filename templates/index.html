@@ -549,6 +549,43 @@
         text-align: center;
       }
     }
+
+    .industry-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 12px 48px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      position: sticky;
+      top: 64px;
+      z-index: 99;
+    }
+
+    .ind-tab {
+      padding: 8px 20px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .ind-tab:hover {
+      border-color: var(--gold);
+      color: var(--text);
+    }
+
+    .ind-tab.active {
+      background: var(--gold);
+      color: #0a0800;
+      border-color: var(--gold);
+      font-weight: 500;
+    }
   </style>
 </head>
 
@@ -569,7 +606,17 @@
       <a href="/register" class="btn-nav btn-gold">Sign Up</a>
       {% endif %}
     </div>
-  </nav>
+  </nav><!-- Industry Tabs -->
+  <div class="industry-tabs">
+    <button class="ind-tab active" onclick="switchIndustry('hollywood')">🎬 Hollywood</button>
+    <button class="ind-tab" onclick="switchIndustry('bollywood')">🎭 Bollywood</button>
+    <button class="ind-tab" onclick="switchIndustry('tollywood')">🌟 Tollywood</button>
+    <button class="ind-tab" onclick="switchIndustry('kollywood')">🎪 Kollywood</button>
+    <button class="ind-tab" onclick="switchIndustry('sandalwood')">🏆 Sandalwood</button>
+    <button class="ind-tab" onclick="switchIndustry('mollywood')">🌍 Mollywood</button>
+  </div>
+
+
 
   <section class="hero">
     <div class="hero-eyebrow">🎬 Movie Discovery Reimagined</div>
@@ -665,23 +712,45 @@
 
   <script>
     // Trending movies - using IMDB IDs directly (faster, no search needed)
-    const TRENDING_IDS = [
-      'tt9362722', 'tt1630029', 'tt15239678', 'tt9376612',
-      'tt14998742', 'tt11280740', 'tt10366206', 'tt13238346'
-    ];
-    const TOP_RATED_IDS = [
-      'tt0068646', 'tt0111161', 'tt0468569', 'tt0137523',
-      'tt0816692', 'tt1375666', 'tt0133093', 'tt4154796'
-    ];
-    const KANNADA_IDS = [
-      'tt0114369', 'tt0317248', 'tt0361748', 'tt0407887',
-      'tt1375666', 'tt0468569', 'tt0816692', 'tt4154796'
-    ];
-    const PAN_INDIA_IDS = [
-      'tt0120737', 'tt0167260', 'tt0080684', 'tt0076759',
-      'tt0245429', 'tt0266543', 'tt0435761', 'tt0033467'
-    ];
-
+    const INDUSTRIES = {
+      hollywood: {
+        trending: ['tt9362722', 'tt1630029', 'tt15239678', 'tt9376612', 'tt14998742', 'tt11280740', 'tt10366206', 'tt13238346'],
+        toprated: ['tt0068646', 'tt0111161', 'tt0468569', 'tt0137523', 'tt0816692', 'tt1375666', 'tt0133093', 'tt4154796'],
+        award: ['tt0114369', 'tt0317248', 'tt0361748', 'tt0407887', 'tt1375666', 'tt0468569', 'tt0816692', 'tt4154796'],
+        world: ['tt0120737', 'tt0167260', 'tt0080684', 'tt0076759', 'tt0245429', 'tt0266543', 'tt0435761', 'tt0033467']
+      },
+      bollywood: {
+        trending: ['Dangal', 'Sultan', 'PK', '3 Idiots', 'Bajrangi Bhaijaan', 'War 2019', 'KGF Chapter 2', 'RRR'],
+        toprated: ['Dilwale Dulhania Le Jayenge', 'Sholay', 'Mughal-E-Azam', 'Mother India', 'Guide 1965', 'Pyaasa', 'Kagaz Ke Phool', 'Sahib Bibi Aur Ghulam'],
+        award: ['Lagaan', 'Taare Zameen Par', 'Black 2005', 'Devdas 2002', 'Swades', 'Rang De Basanti', 'Chak De India', 'Dil Chahta Hai'],
+        world: ['Zindagi Na Milegi Dobara', 'Dil Dhadakne Do', 'Queen 2014', 'Barfi', 'English Vinglish', 'Kahaani', 'Vicky Donor', 'Piku']
+      },
+      tollywood: {
+        trending: ['Baahubali The Beginning', 'Baahubali 2', 'RRR 2022', 'Pushpa The Rise', 'Magadheera', 'Arjun Reddy', 'Ala Vaikunthapurramuloo', 'Uppena'],
+        toprated: ['Mahanati', 'Jersey 2019', 'Fidaa', 'Pellichoopulu', 'Rangasthalam', 'Maharshi', 'Bheemla Nayak', 'Vakeel Saab'],
+        award: ['Mahanati', 'Arjun Reddy', 'Rangasthalam', 'RRR 2022', 'Jersey 2019', 'Baahubali 2', 'Pushpa The Rise', 'Uppena'],
+        world: ['Baahubali 2', 'RRR 2022', 'Pushpa The Rise', 'Magadheera', 'Arjun Reddy', 'Mahanati', 'Rangasthalam', 'Jersey 2019']
+      },
+      kollywood: {
+        trending: ['Vikram 2022', 'Master 2021', 'Enthiran', 'Mersal', '96 Tamil', 'Asuran', 'Jai Bhim', 'Beast 2022'],
+        toprated: ['Pariyerum Perumal', 'Visaranai', 'Kaithi', 'Super Deluxe', 'Soorarai Pottru', 'Vikram 2022', 'Master 2021', '96 Tamil'],
+        award: ['Soorarai Pottru', 'Jai Bhim', 'Asuran', 'Visaranai', 'Pariyerum Perumal', '96 Tamil', 'Super Deluxe', 'Kaithi'],
+        world: ['Enthiran', 'Vikram 2022', 'Master 2021', 'Mersal', '96 Tamil', 'Asuran', 'Jai Bhim', 'Soorarai Pottru']
+      },
+      sandalwood: {
+        trending: ['KGF Chapter 1', 'KGF Chapter 2', 'Kantara', 'KGF chapter 1', 'Devil Kannada', 'Suryavamsha', 'Mufti Kannada', 'Jinda'],
+        toprated: ['ulidavaru kandanthe', 'kotigobba', 'galipata', 'Ugramm', 'Tagaru', 'Yuvarathnaa', 'Roberrt', 'Vikrant Rona'],
+        award: ['rangitha rang', 'cult', 'chowka', 'mocktail', 'Mufti Kannada', 'Godhi Banna Sadharana Mykattu', 'Lucia Kannada', 'Thithi'],
+        world: ['KGF chapter 2', 'Kantara', 'charlie kannada', 'nanu avanalla avalu', 'Suryavamsha', 'Tagaru', 'Yuvarathnaa', 'Roberrt']
+      },
+      mollywood: {
+        trending: ['Thudarum', 'Kuruthi Malayalam', 'Antony Malayalam', 'Dhoomam', 'Bramayugam', 'Joseph Malayalam', 'Theevram', 'Minnal Murali'],
+        toprated: ['Drishyam', 'Kumbalangi Nights', 'Bramayugam', 'Joseph Malayalam', 'Kuruthi Malayalam', 'Minnal Murali', 'Jana Gana Mana Malayalam', 'Jallikattu'],
+        award: ['Bramayugam', 'Drishyam', 'Kumbalangi Nights', 'Jallikattu', 'Minnal Murali', 'Jana Gana Mana Malayalam', 'Joseph Malayalam', 'Virus Malayalam'],
+        world: ['Thudarum', 'Antony Malayalam', 'Dhoomam', 'Kuruthi Malayalam', 'Premam', 'Bangalore Days', 'Charlie Malayalam', 'Lucifer Malayalam']
+      }
+    };
+    let currentIndustry = 'hollywood';
     function movieCard(movie) {
       const poster = movie.Poster && movie.Poster !== 'N/A'
         ? `<img class="movie-poster" src="${movie.Poster}" alt="${movie.Title}" loading="lazy"/>`
@@ -763,10 +832,45 @@
     });
 
     // Load grids using IMDB IDs directly - much faster!
-    loadGrid(TRENDING_IDS, 'trendingGrid');
-    loadGrid(TOP_RATED_IDS, 'topRatedGrid');
-    loadGrid(KANNADA_IDS, 'kannadaGrid');
-    loadGrid(PAN_INDIA_IDS, 'panIndiaGrid');
+    async function loadGridBySearch(titles, gridId) {
+      const grid = document.getElementById(gridId);
+      grid.innerHTML = '<div class="loading"><div class="spinner"></div> Loading...</div>';
+      const promises = titles.map(async title => {
+        try {
+          const res = await fetch(`/api/search?q=${encodeURIComponent(title)}`);
+          const data = await res.json();
+          return data.movies && data.movies.length ? data.movies[0] : null;
+        } catch (e) { return null; }
+      });
+      const movies = await Promise.all(promises);
+      const valid = movies.filter(m => m && m.Title);
+      grid.innerHTML = valid.length
+        ? valid.map(movieCard).join('')
+        : '<div class="no-results"><div class="no-results-icon">🎬</div>Could not load movies.</div>';
+    }
+
+    function loadAllSections(industry) {
+      const data = INDUSTRIES[industry];
+      if (industry === 'hollywood') {
+        loadGrid(data.trending, 'trendingGrid');
+        loadGrid(data.toprated, 'topRatedGrid');
+        loadGrid(data.award, 'kannadaGrid');
+        loadGrid(data.world, 'panIndiaGrid');
+      } else {
+        loadGridBySearch(data.trending, 'trendingGrid');
+        loadGridBySearch(data.toprated, 'topRatedGrid');
+        loadGridBySearch(data.award, 'kannadaGrid');
+        loadGridBySearch(data.world, 'panIndiaGrid');
+      }
+    }
+
+    loadAllSections(currentIndustry);
+    function switchIndustry(industry) {
+      currentIndustry = industry;
+      document.querySelectorAll('.ind-tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      loadAllSections(industry);
+    }
   </script>
 </body>
 
