@@ -710,9 +710,7 @@
     <div class="footer-text">© 2024 CineVerse. Built for movie lovers.</div>
   </footer>
 
-  <script>
-    // Trending movies - using IMDB IDs directly (faster, no search needed)
-    const INDUSTRIES = {
+  <script>const INDUSTRIES = {
       hollywood: {
         trending: ['tt9362722', 'tt1630029', 'tt15239678', 'tt9376612', 'tt14998742', 'tt11280740', 'tt10366206', 'tt13238346'],
         toprated: ['tt0068646', 'tt0111161', 'tt0468569', 'tt0137523', 'tt0816692', 'tt1375666', 'tt0133093', 'tt4154796'],
@@ -720,34 +718,34 @@
         world: ['tt0120737', 'tt0167260', 'tt0080684', 'tt0076759', 'tt0245429', 'tt0266543', 'tt0435761', 'tt0033467']
       },
       bollywood: {
-        trending: ['tt1187043', 'tt4326444', 'tt5074352', 'tt2278388', 'tt8108198', 'tt6263850', 'tt7784604', 'tt9311664'],
-        toprated: ['tt0291479', 'tt0258463', 'tt0364151', 'tt0417299', 'tt0473367', 'tt0169102', 'tt0243061', 'tt0145487'],
-        award: ['tt1187043', 'tt0258463', 'tt0291479', 'tt0364151', 'tt0417299', 'tt0473367', 'tt0169102', 'tt0243061'],
-        world: ['tt0291479', 'tt0364151', 'tt0417299', 'tt0473367', 'tt0169102', 'tt0243061', 'tt1187043', 'tt0258463']
+        trending: ['Dangal', 'Sultan 2016', 'PK 2014', '3 Idiots', 'Bajrangi Bhaijaan', 'Dil Dhadakne Do', 'Queen 2014', 'Zindagi Na Milegi Dobara'],
+        toprated: ['Dilwale Dulhania Le Jayenge', 'Sholay 1975', 'Mughal-E-Azam', 'Devdas 2002', 'Lagaan', 'Taare Zameen Par', 'Black 2005', 'Swades'],
+        award: ['Lagaan', 'Taare Zameen Par', 'Black 2005', 'Swades', 'Rang De Basanti', 'Chak De India', 'Dangal', 'Barfi'],
+        world: ['Zindagi Na Milegi Dobara', 'Dil Dhadakne Do', 'Queen 2014', 'Barfi', 'English Vinglish', 'Piku', 'Kahaani', 'Vicky Donor']
       },
       tollywood: {
-        trending: ['tt2106476', 'tt8108198', 'tt11286314', 'tt8593344', 'tt9032400', 'tt8364368', 'tt6263850', 'tt9311664'],
-        toprated: ['tt2106476', 'tt1490017', 'tt3863552', 'tt4915672', 'tt5813916', 'tt8364368', 'tt6263850', 'tt9311664'],
-        award: ['tt2106476', 'tt1490017', 'tt3863552', 'tt4915672', 'tt5813916', 'tt8364368', 'tt6263850', 'tt9311664'],
-        world: ['tt1490017', 'tt3863552', 'tt4915672', 'tt5813916', 'tt2106476', 'tt8364368', 'tt6263850', 'tt9311664']
+        trending: ['Baahubali 2 The Conclusion', 'RRR 2022', 'Pushpa The Rise', 'Magadheera', 'Arjun Reddy', 'Ala Vaikunthapurramuloo', 'Uppena', 'Bheemla Nayak'],
+        toprated: ['Mahanati', 'Jersey 2019', 'Fidaa', 'Pellichoopulu', 'Rangasthalam', 'Maharshi', 'Vakeel Saab', 'Shyam Singha Roy'],
+        award: ['Mahanati', 'RRR 2022', 'Baahubali 2 The Conclusion', 'Rangasthalam', 'Jersey 2019', 'Arjun Reddy', 'Pushpa The Rise', 'Uppena'],
+        world: ['Baahubali 2 The Conclusion', 'RRR 2022', 'Pushpa The Rise', 'Magadheera', 'Mahanati', 'Rangasthalam', 'Jersey 2019', 'Arjun Reddy']
       },
       kollywood: {
-        trending: ['tt10399606', 'tt8108198', 'tt6334354', 'tt7784604', 'tt9311664', 'tt8637428', 'tt6263850', 'tt9032400'],
-        toprated: ['tt2375557', 'tt3863552', 'tt4056386', 'tt4915672', 'tt6263850', 'tt9311664', 'tt8637428', 'tt7784604'],
-        award: ['tt2375557', 'tt3863552', 'tt4056386', 'tt4915672', 'tt6263850', 'tt9311664', 'tt8637428', 'tt7784604'],
-        world: ['tt3863552', 'tt4056386', 'tt4915672', 'tt2375557', 'tt6263850', 'tt9311664', 'tt8637428', 'tt7784604']
+        trending: ['Vikram 2022', 'Master 2021', 'Beast 2022', 'Valimai', 'Doctor 2021', 'Jai Bhim', 'Asuran', 'Soorarai Pottru'],
+        toprated: ['Vikram 2022', 'Master 2021', 'Jai Bhim', 'Asuran', 'Soorarai Pottru', '96 2018', 'Kaithi', 'Super Deluxe'],
+        award: ['Soorarai Pottru', 'Jai Bhim', 'Asuran', 'Visaranai', 'Pariyerum Perumal', '96 2018', 'Super Deluxe', 'Kaithi'],
+        world: ['Vikram 2022', 'Master 2021', 'Enthiran', 'Mersal', 'Jai Bhim', 'Asuran', 'Soorarai Pottru', '96 2018']
       },
       sandalwood: {
-        trending: ['tt8108198', 'tt9818745', 'tt8164826', 'tt9032400', 'tt8593344', 'tt10399606', 'tt6263850', 'tt9311664'],
-        toprated: ['tt8108198', 'tt9818745', 'tt4326444', 'tt5813916', 'tt8593344', 'tt9032400', 'tt6263850', 'tt9311664'],
-        award: ['tt8108198', 'tt9818745', 'tt4326444', 'tt5813916', 'tt8593344', 'tt9032400', 'tt6263850', 'tt9311664'],
-        world: ['tt9818745', 'tt8108198', 'tt4326444', 'tt5813916', 'tt8593344', 'tt9032400', 'tt6263850', 'tt9311664']
+        trending: ['KGF Chapter 1', 'KGF Chapter 2', 'Kantara 2022', 'Ugramm', 'Mufti Kannada', 'Tagaru', 'Yuvarathnaa', 'Roberrt'],
+        toprated: ['Kantara 2022', 'KGF Chapter 2', 'KGF Chapter 1', 'Ugramm', 'Mufti Kannada', 'Tagaru', 'Yuvarathnaa', 'Vikrant Rona'],
+        award: ['Kantara 2022', 'KGF Chapter 2', 'KGF Chapter 1', 'Ugramm', 'Mufti Kannada', 'Godhi Banna Sadharana Mykattu', 'Thithi', 'Lucia Kannada'],
+        world: ['KGF Chapter 2', 'Kantara 2022', 'KGF Chapter 1', 'Ugramm', 'Mufti Kannada', 'Tagaru', 'Yuvarathnaa', 'Roberrt']
       },
       mollywood: {
-        trending: ['tt8364368', 'tt9032400', 'tt8593344', 'tt14101636', 'tt6263850', 'tt9311664', 'tt8637428', 'tt7784604'],
-        toprated: ['tt4915672', 'tt5813916', 'tt8364368', 'tt9032400', 'tt8593344', 'tt6263850', 'tt9311664', 'tt8637428'],
-        award: ['tt4915672', 'tt5813916', 'tt8364368', 'tt9032400', 'tt8593344', 'tt6263850', 'tt9311664', 'tt8637428'],
-        world: ['tt5813916', 'tt4915672', 'tt8364368', 'tt9032400', 'tt8593344', 'tt6263850', 'tt9311664', 'tt8637428']
+        trending: ['Thudarum', 'Bramayugam', 'Manjummel Boys', 'Aavesham', 'Premalu', 'Guruvayoor Ambalanadayil', 'Stree 2', 'Marco Malayalam'],
+        toprated: ['Drishyam', 'Kumbalangi Nights', 'Jallikattu', 'Minnal Murali', 'Jana Gana Mana Malayalam', 'Joseph Malayalam', 'Virus Malayalam', 'Android Kunjappan'],
+        award: ['Drishyam', 'Kumbalangi Nights', 'Jallikattu', 'Minnal Murali', 'Jana Gana Mana Malayalam', 'Virus Malayalam', 'Joseph Malayalam', 'Android Kunjappan'],
+        world: ['Thudarum', 'Bramayugam', 'Manjummel Boys', 'Aavesham', 'Premalu', 'Drishyam', 'Kumbalangi Nights', 'Minnal Murali']
       }
     };
     let currentIndustry = 'hollywood';
@@ -851,10 +849,17 @@
 
     function loadAllSections(industry) {
       const data = INDUSTRIES[industry];
-      loadGrid(data.trending, 'trendingGrid');
-      loadGrid(data.toprated, 'topRatedGrid');
-      loadGrid(data.award, 'kannadaGrid');
-      loadGrid(data.world, 'panIndiaGrid');
+      if (industry === 'hollywood') {
+        loadGrid(data.trending, 'trendingGrid');
+        loadGrid(data.toprated, 'topRatedGrid');
+        loadGrid(data.award, 'kannadaGrid');
+        loadGrid(data.world, 'panIndiaGrid');
+      } else {
+        loadGridBySearch(data.trending, 'trendingGrid');
+        loadGridBySearch(data.toprated, 'topRatedGrid');
+        loadGridBySearch(data.award, 'kannadaGrid');
+        loadGridBySearch(data.world, 'panIndiaGrid');
+      }
     }
     loadAllSections(currentIndustry);
     function switchIndustry(industry) {
