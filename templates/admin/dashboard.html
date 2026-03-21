@@ -74,7 +74,41 @@
             font-size: 36px;
             letter-spacing: 2px;
             color: var(--gold);
+            margin-bottom: 24px;
+        }
+
+        .search-wrap {
+            display: flex;
+            gap: 12px;
             margin-bottom: 32px;
+        }
+
+        .search-wrap input {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--card2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+            outline: none;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .search-wrap input:focus {
+            border-color: var(--gold);
+        }
+
+        .search-wrap button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--gold), #c9962a);
+            border: none;
+            border-radius: 8px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 16px;
+            letter-spacing: 1px;
+            color: #0a0800;
+            cursor: pointer;
         }
 
         .stats-grid {
@@ -238,6 +272,12 @@
     <div class="wrap">
         <div class="page-title">📊 Admin Dashboard</div>
 
+        <!-- Search Bar -->
+        <div class="search-wrap">
+            <input type="text" id="searchInput" placeholder="Search movie name..." oninput="searchMovie()" />
+            <button onclick="searchMovie()">SEARCH</button>
+        </div>
+
         <!-- Stats -->
         <div class="stats-grid" id="statsGrid">
             <div class="loading">
@@ -280,12 +320,19 @@
     </div>
 
     <script>
+        async function getMovieTitle(movieId) {
+            try {
+                const res = await fetch(`/api/movie/${movieId}`);
+                const data = await res.json();
+                return data.movie ? data.movie.Title : movieId;
+            } catch (e) { return movieId; }
+        }
+
         async function loadStats() {
             try {
                 const res = await fetch('/api/admin/stats');
                 const data = await res.json();
 
-                // Stats Grid
                 document.getElementById('statsGrid').innerHTML = `
       <div class="stat-card"><div class="stat-num">${data.total_users}</div><div class="stat-label">Total Users</div></div>
       <div class="stat-card"><div class="stat-num">${data.ratings.reduce((a, r) => a + r.total, 0)}</div><div class="stat-label">Total Ratings</div></div>
@@ -293,27 +340,22 @@
       <div class="stat-card"><div class="stat-num">${data.watchlist.reduce((a, w) => a + w.total, 0)}</div><div class="stat-label">Total Watchlists</div></div>
     `;
 
-                // Ratings Table
-                if (data.ratings.length) {
-                    document.getElementById('ratingsTable').innerHTML = `
-        <table class="movie-table">
-          <thead><tr><th>Movie ID</th><th>Total</th><th>Skip</th><th>Timepass</th><th>Go for It</th><th>Perfection</th></tr></thead>
-          <tbody>${data.ratings.map(r => `
-            <tr>
-              <td><a href="/movie/${r.movie_id}" style="color:var(--gold);text-decoration:none;">${r.movie_id}</a></td>
-              <td>${r.total}</td>
-              <td><span class="badge badge-skip">${r.skip}</span></td>
-              <td><span class="badge badge-timepass">${r.timepass}</span></td>
-              <td><span class="badge badge-goforit">${r.goforit}</span></td>
-              <td><span class="badge badge-perfection">${r.perfection}</span></td>
-            </tr>`).join('')}
-          </tbody>
-        </table>`;
-                } else {
-                    document.getElementById('ratingsTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No ratings yet.</p>';
-                }
+                const allMovieIds = [...new Set([
+                    ...data.ratings.map(r => r.movie_id),
+                    ...data.watchlist.map(w => w.movie_id),
+                    ...data.vibes.map(v => v.movie_id)
+                ])];
 
-                // Date Wise
+                const titles = {};
+                await Promise.all(allMovieIds.map(async id => {
+                    titles[id] = await getMovieTitle(id);
+                }));
+
+                window.adminData = data;
+                window.movieTitles = titles;
+
+                renderRatingsTable(data.ratings, titles);
+
                 if (data.date_ratings.length) {
                     document.getElementById('dateGrid').innerHTML = data.date_ratings.map(d => `
         <div class="date-card">
@@ -324,46 +366,92 @@
                     document.getElementById('dateGrid').innerHTML = '<p style="color:var(--muted);padding:20px;">No data yet.</p>';
                 }
 
-                // Watchlist Table
-                if (data.watchlist.length) {
-                    document.getElementById('watchlistTable').innerHTML = `
-        <table class="movie-table">
-          <thead><tr><th>Movie ID</th><th>Total Saves</th></tr></thead>
-          <tbody>${data.watchlist.map(w => `
-            <tr>
-              <td><a href="/movie/${w.movie_id}" style="color:var(--gold);text-decoration:none;">${w.movie_id}</a></td>
-              <td>${w.total}</td>
-            </tr>`).join('')}
-          </tbody>
-        </table>`;
-                } else {
-                    document.getElementById('watchlistTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No watchlist data yet.</p>';
-                }
+                renderWatchlistTable(data.watchlist, titles);
+                renderVibesTable(data.vibes, titles);
 
-                // Vibes Table
-                if (data.vibes.length) {
-                    document.getElementById('vibesTable').innerHTML = `
-        <table class="movie-table">
-          <thead><tr><th>Movie ID</th><th>Total</th><th>Action</th><th>Romance</th><th>Comedy</th><th>Thriller</th><th>Drama</th></tr></thead>
-          <tbody>${data.vibes.map(v => `
-            <tr>
-              <td><a href="/movie/${v.movie_id}" style="color:var(--gold);text-decoration:none;">${v.movie_id}</a></td>
-              <td>${v.total}</td>
-              <td>${v.action}%</td>
-              <td>${v.romance}%</td>
-              <td>${v.comedy}%</td>
-              <td>${v.thriller}%</td>
-              <td>${v.drama}%</td>
-            </tr>`).join('')}
-          </tbody>
-        </table>`;
-                } else {
-                    document.getElementById('vibesTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No vibe data yet.</p>';
-                }
+            } catch (e) { console.error(e); }
+        }
 
-            } catch (e) {
-                console.error(e);
+        function renderRatingsTable(ratings, titles) {
+            if (ratings.length) {
+                document.getElementById('ratingsTable').innerHTML = `
+      <table class="movie-table">
+        <thead><tr><th>Movie Name</th><th>Total</th><th>Skip</th><th>Timepass</th><th>Go for It</th><th>Perfection</th></tr></thead>
+        <tbody>${ratings.map(r => `
+          <tr>
+            <td><a href="/movie/${r.movie_id}" style="color:var(--gold);text-decoration:none;">${titles[r.movie_id] || r.movie_id}</a></td>
+            <td>${r.total}</td>
+            <td><span class="badge badge-skip">${r.skip}</span></td>
+            <td><span class="badge badge-timepass">${r.timepass}</span></td>
+            <td><span class="badge badge-goforit">${r.goforit}</span></td>
+            <td><span class="badge badge-perfection">${r.perfection}</span></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+            } else {
+                document.getElementById('ratingsTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No ratings yet.</p>';
             }
+        }
+
+        function renderWatchlistTable(watchlist, titles) {
+            if (watchlist.length) {
+                document.getElementById('watchlistTable').innerHTML = `
+      <table class="movie-table">
+        <thead><tr><th>Movie Name</th><th>Total Saves</th></tr></thead>
+        <tbody>${watchlist.map(w => `
+          <tr>
+            <td><a href="/movie/${w.movie_id}" style="color:var(--gold);text-decoration:none;">${titles[w.movie_id] || w.movie_id}</a></td>
+            <td>${w.total}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+            } else {
+                document.getElementById('watchlistTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No watchlist data yet.</p>';
+            }
+        }
+
+        function renderVibesTable(vibes, titles) {
+            if (vibes.length) {
+                document.getElementById('vibesTable').innerHTML = `
+      <table class="movie-table">
+        <thead><tr><th>Movie Name</th><th>Total</th><th>Action</th><th>Romance</th><th>Comedy</th><th>Thriller</th><th>Drama</th></tr></thead>
+        <tbody>${vibes.map(v => `
+          <tr>
+            <td><a href="/movie/${v.movie_id}" style="color:var(--gold);text-decoration:none;">${titles[v.movie_id] || v.movie_id}</a></td>
+            <td>${v.total}</td>
+            <td>${v.action}%</td>
+            <td>${v.romance}%</td>
+            <td>${v.comedy}%</td>
+            <td>${v.thriller}%</td>
+            <td>${v.drama}%</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+            } else {
+                document.getElementById('vibesTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No vibe data yet.</p>';
+            }
+        }
+
+        function searchMovie() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            if (!query) {
+                renderRatingsTable(window.adminData.ratings, window.movieTitles);
+                renderWatchlistTable(window.adminData.watchlist, window.movieTitles);
+                renderVibesTable(window.adminData.vibes, window.movieTitles);
+                return;
+            }
+            const filteredRatings = window.adminData.ratings.filter(r =>
+                (window.movieTitles[r.movie_id] || '').toLowerCase().includes(query) || r.movie_id.toLowerCase().includes(query)
+            );
+            const filteredWatchlist = window.adminData.watchlist.filter(w =>
+                (window.movieTitles[w.movie_id] || '').toLowerCase().includes(query) || w.movie_id.toLowerCase().includes(query)
+            );
+            const filteredVibes = window.adminData.vibes.filter(v =>
+                (window.movieTitles[v.movie_id] || '').toLowerCase().includes(query) || v.movie_id.toLowerCase().includes(query)
+            );
+            renderRatingsTable(filteredRatings, window.movieTitles);
+            renderWatchlistTable(filteredWatchlist, window.movieTitles);
+            renderVibesTable(filteredVibes, window.movieTitles);
         }
 
         loadStats();
