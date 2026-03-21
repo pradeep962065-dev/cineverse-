@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: cineverse
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY
+        value: cineverse-secret-key-2024
+      - key: OMDB_API_KEY
+        value: 94475d77
