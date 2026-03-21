@@ -341,6 +341,74 @@ def reset_password(token):
             return redirect(url_for('login'))
     return render_template('auth/reset_password.html', token=token)
 
+# Admin Dashboard
+@app.route('/admin')
+@login_required
+def admin_dashboard():
+    if not current_user.is_admin:
+        return redirect(url_for('index'))
+    return render_template('admin/dashboard.html')
+
+# Admin API - Movie Stats
+@app.route('/api/admin/stats')
+@login_required
+def admin_stats():
+    if not current_user.is_admin:
+        return jsonify({'error': 'Unauthorized'}), 403
+    from models import Comment, Watchlist
+    from sqlalchemy import func
+    
+    # Get all rated movies with counts
+    ratings = db.session.query(
+        MoctaleRating.movie_id,
+        func.count(MoctaleRating.rating_id).label('total'),
+        func.sum(db.case((MoctaleRating.meter_value == 'Skip', 1), else_=0)).label('skip'),
+        func.sum(db.case((MoctaleRating.meter_value == 'Timepass', 1), else_=0)).label('timepass'),
+        func.sum(db.case((MoctaleRating.meter_value == 'Go for It', 1), else_=0)).label('goforit'),
+        func.sum(db.case((MoctaleRating.meter_value == 'Perfection', 1), else_=0)).label('perfection')
+    ).group_by(MoctaleRating.movie_id).all()
+
+    # Get watchlist counts
+    watchlist = db.session.query(
+        Watchlist.movie_id,
+        func.count(Watchlist.watch_id).label('total')
+    ).group_by(Watchlist.movie_id).all()
+
+    # Get vibe counts
+    vibes = db.session.query(
+        VibeChart.movie_id,
+        func.count(VibeChart.vibe_id).label('total'),
+        func.avg(VibeChart.action).label('action'),
+        func.avg(VibeChart.romance).label('romance'),
+        func.avg(VibeChart.comedy).label('comedy'),
+        func.avg(VibeChart.thriller).label('thriller'),
+        func.avg(VibeChart.drama).label('drama')
+    ).group_by(VibeChart.movie_id).all()
+
+    # Get comment counts
+    comments = db.session.query(
+        Comment.movie_id,
+        func.count(Comment.comment_id).label('total')
+    ).group_by(Comment.movie_id).all()
+
+    # Get date wise ratings
+    date_ratings = db.session.query(
+        func.date(MoctaleRating.rated_on).label('date'),
+        func.count(MoctaleRating.rating_id).label('total')
+    ).group_by(func.date(MoctaleRating.rated_on)).order_by(func.date(MoctaleRating.rated_on)).all()
+
+    # Get total users
+    total_users = User.query.count()
+
+    return jsonify({
+        'ratings': [{'movie_id': r.movie_id, 'total': r.total, 'skip': r.skip, 'timepass': r.timepass, 'goforit': r.goforit, 'perfection': r.perfection} for r in ratings],
+        'watchlist': [{'movie_id': w.movie_id, 'total': w.total} for w in watchlist],
+        'vibes': [{'movie_id': v.movie_id, 'total': v.total, 'action': round(v.action or 0, 1), 'romance': round(v.romance or 0, 1), 'comedy': round(v.comedy or 0, 1), 'thriller': round(v.thriller or 0, 1), 'drama': round(v.drama or 0, 1)} for v in vibes],
+        'comments': [{'movie_id': c.movie_id, 'total': c.total} for c in comments],
+        'date_ratings': [{'date': str(d.date), 'total': d.total} for d in date_ratings],
+        'total_users': total_users
+    })
+
 # Email Verification
 @app.route('/verify/<token>')
 def verify_email(token):

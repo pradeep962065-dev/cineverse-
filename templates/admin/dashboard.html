@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CineVerse – Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #07090e;
+            --surface: #0d1017;
+            --card: #111520;
+            --card2: #161b27;
+            --border: rgba(255, 255, 255, 0.06);
+            --gold: #e8b84b;
+            --text: #e8e6e0;
+            --muted: #5a5d68;
+            --red: #e74c3c;
+            --green: #27ae60;
+            --blue: #3498db;
+            --yellow: #f39c12;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            min-height: 100vh;
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 48px;
+            height: 64px;
+            background: rgba(7, 9, 14, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-brand {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 28px;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, var(--gold), #fff5c0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .wrap {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 48px;
+        }
+
+        .page-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 36px;
+            letter-spacing: 2px;
+            color: var(--gold);
+            margin-bottom: 32px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .stat-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 40px;
+            color: var(--gold);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        .section-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 24px;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+
+        .section-title span {
+            color: var(--gold);
+        }
+
+        .movie-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        .movie-table th {
+            background: var(--card2);
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .movie-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+
+        .movie-table tr:hover td {
+            background: var(--card);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .badge-skip {
+            background: rgba(231, 76, 60, 0.15);
+            color: var(--red);
+        }
+
+        .badge-timepass {
+            background: rgba(243, 156, 18, 0.15);
+            color: var(--yellow);
+        }
+
+        .badge-goforit {
+            background: rgba(39, 174, 96, 0.15);
+            color: var(--green);
+        }
+
+        .badge-perfection {
+            background: rgba(52, 152, 219, 0.15);
+            color: var(--blue);
+        }
+
+        .date-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 40px;
+        }
+
+        .date-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .date-text {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .date-count {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 24px;
+            color: var(--gold);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            border-top-color: var(--gold);
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <a href="/" class="nav-brand">CineVerse</a>
+        <div style="display:flex;align-items:center;gap:16px;">
+            <span style="font-size:13px;color:var(--gold);">👑 Admin Panel</span>
+            <a href="/" style="font-size:13px;color:var(--muted);text-decoration:none;">Home</a>
+            <a href="/logout" style="font-size:13px;color:var(--muted);text-decoration:none;">Logout</a>
+        </div>
+    </nav>
+
+    <div class="wrap">
+        <div class="page-title">📊 Admin Dashboard</div>
+
+        <!-- Stats -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+
+        <!-- Ratings Table -->
+        <div class="section-title">🎬 Movie <span>Ratings</span></div>
+        <div id="ratingsTable">
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+
+        <!-- Date Wise -->
+        <div class="section-title">📅 Date Wise <span>Activity</span></div>
+        <div class="date-grid" id="dateGrid">
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+
+        <!-- Watchlist -->
+        <div class="section-title">📌 Watchlist <span>Stats</span></div>
+        <div id="watchlistTable">
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+
+        <!-- Vibes -->
+        <div class="section-title">🎭 Vibe <span>Chart Stats</span></div>
+        <div id="vibesTable">
+            <div class="loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/admin/stats');
+                const data = await res.json();
+
+                // Stats Grid
+                document.getElementById('statsGrid').innerHTML = `
+      <div class="stat-card"><div class="stat-num">${data.total_users}</div><div class="stat-label">Total Users</div></div>
+      <div class="stat-card"><div class="stat-num">${data.ratings.reduce((a, r) => a + r.total, 0)}</div><div class="stat-label">Total Ratings</div></div>
+      <div class="stat-card"><div class="stat-num">${data.vibes.reduce((a, v) => a + v.total, 0)}</div><div class="stat-label">Total Vibes</div></div>
+      <div class="stat-card"><div class="stat-num">${data.watchlist.reduce((a, w) => a + w.total, 0)}</div><div class="stat-label">Total Watchlists</div></div>
+    `;
+
+                // Ratings Table
+                if (data.ratings.length) {
+                    document.getElementById('ratingsTable').innerHTML = `
+        <table class="movie-table">
+          <thead><tr><th>Movie ID</th><th>Total</th><th>Skip</th><th>Timepass</th><th>Go for It</th><th>Perfection</th></tr></thead>
+          <tbody>${data.ratings.map(r => `
+            <tr>
+              <td><a href="/movie/${r.movie_id}" style="color:var(--gold);text-decoration:none;">${r.movie_id}</a></td>
+              <td>${r.total}</td>
+              <td><span class="badge badge-skip">${r.skip}</span></td>
+              <td><span class="badge badge-timepass">${r.timepass}</span></td>
+              <td><span class="badge badge-goforit">${r.goforit}</span></td>
+              <td><span class="badge badge-perfection">${r.perfection}</span></td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`;
+                } else {
+                    document.getElementById('ratingsTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No ratings yet.</p>';
+                }
+
+                // Date Wise
+                if (data.date_ratings.length) {
+                    document.getElementById('dateGrid').innerHTML = data.date_ratings.map(d => `
+        <div class="date-card">
+          <div class="date-text">${d.date}</div>
+          <div class="date-count">${d.total}</div>
+        </div>`).join('');
+                } else {
+                    document.getElementById('dateGrid').innerHTML = '<p style="color:var(--muted);padding:20px;">No data yet.</p>';
+                }
+
+                // Watchlist Table
+                if (data.watchlist.length) {
+                    document.getElementById('watchlistTable').innerHTML = `
+        <table class="movie-table">
+          <thead><tr><th>Movie ID</th><th>Total Saves</th></tr></thead>
+          <tbody>${data.watchlist.map(w => `
+            <tr>
+              <td><a href="/movie/${w.movie_id}" style="color:var(--gold);text-decoration:none;">${w.movie_id}</a></td>
+              <td>${w.total}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`;
+                } else {
+                    document.getElementById('watchlistTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No watchlist data yet.</p>';
+                }
+
+                // Vibes Table
+                if (data.vibes.length) {
+                    document.getElementById('vibesTable').innerHTML = `
+        <table class="movie-table">
+          <thead><tr><th>Movie ID</th><th>Total</th><th>Action</th><th>Romance</th><th>Comedy</th><th>Thriller</th><th>Drama</th></tr></thead>
+          <tbody>${data.vibes.map(v => `
+            <tr>
+              <td><a href="/movie/${v.movie_id}" style="color:var(--gold);text-decoration:none;">${v.movie_id}</a></td>
+              <td>${v.total}</td>
+              <td>${v.action}%</td>
+              <td>${v.romance}%</td>
+              <td>${v.comedy}%</td>
+              <td>${v.thriller}%</td>
+              <td>${v.drama}%</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`;
+                } else {
+                    document.getElementById('vibesTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No vibe data yet.</p>';
+                }
+
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        loadStats();
+    </script>
+</body>
+
+</html>

@@ -14,6 +14,7 @@ class User(UserMixin, db.Model):
     password    = db.Column(db.String(256), nullable=False)
     created_at  = db.Column(db.DateTime, default=datetime.utcnow)
     is_verified = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False)
 
     def get_id(self):
         return str(self.user_id)
