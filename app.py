@@ -13,12 +13,16 @@ app = Flask(__name__,
 
 # Config
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'cineverse-secret')
-app.config['SQLALCHEMY_DATABASE_URI'] = (
-    f"mysql+pymysql://{os.getenv('DB_USER', 'root')}:"
-    f"{os.getenv('DB_PASSWORD', '')}@"
-    f"{os.getenv('DB_HOST', 'localhost')}/"
-    f"{os.getenv('DB_NAME', 'cineverse_db')}"
-)
+database_url = os.getenv('DATABASE_URL')
+if database_url:
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url.replace('mysql://', 'mysql+pymysql://')
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = (
+        f"mysql+pymysql://{os.getenv('DB_USER', 'root')}:"
+        f"{os.getenv('DB_PASSWORD', '')}@"
+        f"{os.getenv('DB_HOST', 'localhost')}/"
+        f"{os.getenv('DB_NAME', 'cineverse_db')}"
+    )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Mail Config
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
