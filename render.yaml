@@ -3,7 +3,7 @@ services:
     name: cineverse
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    startCommand: gunicorn --workers 1 --timeout 120 app:app
     envVars:
       - key: SECRET_KEY
         value: cineverse-secret-key-2024
