@@ -391,12 +391,18 @@ def admin_stats():
         func.count(Comment.comment_id).label('total')
     ).group_by(Comment.movie_id).all()
 
-    # Get date wise ratings
+    # Get date wise ratings (all)
     date_ratings = db.session.query(
         func.date(MoctaleRating.rated_on).label('date'),
         func.count(MoctaleRating.rating_id).label('total')
     ).group_by(func.date(MoctaleRating.rated_on)).order_by(func.date(MoctaleRating.rated_on)).all()
 
+    # Get date wise ratings per movie
+    movie_date_ratings = db.session.query(
+        MoctaleRating.movie_id,
+        func.date(MoctaleRating.rated_on).label('date'),
+        func.count(MoctaleRating.rating_id).label('total')
+    ).group_by(MoctaleRating.movie_id, func.date(MoctaleRating.rated_on)).order_by(func.date(MoctaleRating.rated_on)).all()
     # Get total users
     total_users = User.query.count()
 
@@ -406,6 +412,7 @@ def admin_stats():
         'vibes': [{'movie_id': v.movie_id, 'total': v.total, 'action': round(v.action or 0, 1), 'romance': round(v.romance or 0, 1), 'comedy': round(v.comedy or 0, 1), 'thriller': round(v.thriller or 0, 1), 'drama': round(v.drama or 0, 1)} for v in vibes],
         'comments': [{'movie_id': c.movie_id, 'total': c.total} for c in comments],
         'date_ratings': [{'date': str(d.date), 'total': d.total} for d in date_ratings],
+        'movie_date_ratings': [{'movie_id': d.movie_id, 'date': str(d.date), 'total': d.total} for d in movie_date_ratings],
         'total_users': total_users
     })
 

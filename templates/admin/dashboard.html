@@ -438,6 +438,7 @@
                 renderRatingsTable(window.adminData.ratings, window.movieTitles);
                 renderWatchlistTable(window.adminData.watchlist, window.movieTitles);
                 renderVibesTable(window.adminData.vibes, window.movieTitles);
+                renderDateGrid(window.adminData.date_ratings);
                 return;
             }
             const filteredRatings = window.adminData.ratings.filter(r =>
@@ -449,9 +450,35 @@
             const filteredVibes = window.adminData.vibes.filter(v =>
                 (window.movieTitles[v.movie_id] || '').toLowerCase().includes(query) || v.movie_id.toLowerCase().includes(query)
             );
+
+            // Get movie_ids that match search
+            const matchedIds = new Set([
+                ...filteredRatings.map(r => r.movie_id),
+                ...filteredWatchlist.map(w => w.movie_id),
+                ...filteredVibes.map(v => v.movie_id)
+            ]);
+
+            // Filter date_ratings for only those movies
+            const filteredDates = window.adminData.movie_date_ratings.filter(d =>
+                matchedIds.has(d.movie_id)
+            );
+
             renderRatingsTable(filteredRatings, window.movieTitles);
             renderWatchlistTable(filteredWatchlist, window.movieTitles);
             renderVibesTable(filteredVibes, window.movieTitles);
+            renderDateGrid(filteredDates);
+        }
+
+        function renderDateGrid(dates) {
+            if (dates && dates.length) {
+                document.getElementById('dateGrid').innerHTML = dates.map(d => `
+      <div class="date-card">
+        <div class="date-text">${d.date}</div>
+        <div class="date-count">${d.total}</div>
+      </div>`).join('');
+            } else {
+                document.getElementById('dateGrid').innerHTML = '<p style="color:var(--muted);padding:20px;">No date data for this movie.</p>';
+            }
         }
 
         loadStats();
