@@ -361,6 +361,15 @@ def admin_stats():
     # Get all rated movies with counts
     ratings = db.session.query(
         MoctaleRating.movie_id,
+        MoctaleRating.user_id,
+        MoctaleRating.meter_value,
+        MoctaleRating.rated_on,
+        User.username,
+        User.email
+    ).join(User, MoctaleRating.user_id == User.user_id).all()
+
+    ratings_summary = db.session.query(
+        MoctaleRating.movie_id,
         func.count(MoctaleRating.rating_id).label('total'),
         func.sum(db.case((MoctaleRating.meter_value == 'Skip', 1), else_=0)).label('skip'),
         func.sum(db.case((MoctaleRating.meter_value == 'Timepass', 1), else_=0)).label('timepass'),
@@ -374,6 +383,12 @@ def admin_stats():
         func.count(Watchlist.watch_id).label('total')
     ).group_by(Watchlist.movie_id).all()
 
+    watchlist_detail = db.session.query(
+        Watchlist.movie_id,
+        User.username,
+        User.email,
+        Watchlist.added_on
+    ).join(User, Watchlist.user_id == User.user_id).all()
     # Get vibe counts
     vibes = db.session.query(
         VibeChart.movie_id,
@@ -407,7 +422,9 @@ def admin_stats():
     total_users = User.query.count()
 
     return jsonify({
-        'ratings': [{'movie_id': r.movie_id, 'total': r.total, 'skip': r.skip, 'timepass': r.timepass, 'goforit': r.goforit, 'perfection': r.perfection} for r in ratings],
+        'ratings': [{'movie_id': r.movie_id, 'total': r.total, 'skip': r.skip, 'timepass': r.timepass, 'goforit': r.goforit, 'perfection': r.perfection} for r in ratings_summary],
+        'ratings_detail': [{'movie_id': r.movie_id, 'username': r.username, 'email': r.email, 'meter_value': r.meter_value, 'rated_on': str(r.rated_on)} for r in ratings],
+        'watchlist_detail': [{'movie_id': w.movie_id, 'username': w.username, 'email': w.email, 'added_on': str(w.added_on)} for w in watchlist_detail],
         'watchlist': [{'movie_id': w.movie_id, 'total': w.total} for w in watchlist],
         'vibes': [{'movie_id': v.movie_id, 'total': v.total, 'action': round(v.action or 0, 1), 'romance': round(v.romance or 0, 1), 'comedy': round(v.comedy or 0, 1), 'thriller': round(v.thriller or 0, 1), 'drama': round(v.drama or 0, 1)} for v in vibes],
         'comments': [{'movie_id': c.movie_id, 'total': c.total} for c in comments],

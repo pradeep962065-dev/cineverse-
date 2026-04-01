@@ -374,18 +374,40 @@
 
         function renderRatingsTable(ratings, titles) {
             if (ratings.length) {
+                // Group ratings_detail by movie_id
+                const detailMap = {};
+                window.adminData.ratings_detail.forEach(r => {
+                    if (!detailMap[r.movie_id]) detailMap[r.movie_id] = [];
+                    detailMap[r.movie_id].push(r);
+                });
+
                 document.getElementById('ratingsTable').innerHTML = `
       <table class="movie-table">
-        <thead><tr><th>Movie Name</th><th>Total</th><th>Skip</th><th>Timepass</th><th>Go for It</th><th>Perfection</th></tr></thead>
-        <tbody>${ratings.map(r => `
-          <tr>
-            <td><a href="/movie/${r.movie_id}" style="color:var(--gold);text-decoration:none;">${titles[r.movie_id] || r.movie_id}</a></td>
-            <td>${r.total}</td>
-            <td><span class="badge badge-skip">${r.skip}</span></td>
-            <td><span class="badge badge-timepass">${r.timepass}</span></td>
-            <td><span class="badge badge-goforit">${r.goforit}</span></td>
-            <td><span class="badge badge-perfection">${r.perfection}</span></td>
-          </tr>`).join('')}
+        <thead><tr><th>Movie Name</th><th>Username</th><th>Email</th><th>Rating</th><th>Date</th><th>Total</th><th>Skip</th><th>Timepass</th><th>Go for It</th><th>Perfection</th></tr></thead>
+        <tbody>${ratings.map(r => {
+                    const details = detailMap[r.movie_id] || [];
+                    const firstRow = `
+            <tr>
+              <td rowspan="${details.length || 1}"><a href="/movie/${r.movie_id}" style="color:var(--gold);text-decoration:none;">${titles[r.movie_id] || r.movie_id}</a></td>
+              <td>${details[0] ? details[0].username : '-'}</td>
+              <td>${details[0] ? details[0].email : '-'}</td>
+              <td><span class="badge badge-${(details[0]?.meter_value || '').toLowerCase().replace(/ /g, '')}">${details[0]?.meter_value || '-'}</span></td>
+              <td>${details[0] ? details[0].rated_on.split(' ')[0] : '-'}</td>
+              <td rowspan="${details.length || 1}">${r.total}</td>
+              <td rowspan="${details.length || 1}"><span class="badge badge-skip">${r.skip}</span></td>
+              <td rowspan="${details.length || 1}"><span class="badge badge-timepass">${r.timepass}</span></td>
+              <td rowspan="${details.length || 1}"><span class="badge badge-goforit">${r.goforit}</span></td>
+              <td rowspan="${details.length || 1}"><span class="badge badge-perfection">${r.perfection}</span></td>
+            </tr>`;
+                    const extraRows = details.slice(1).map(d => `
+            <tr>
+              <td>${d.username}</td>
+              <td>${d.email}</td>
+              <td><span class="badge badge-${d.meter_value.toLowerCase().replace(/ /g, '')}">${d.meter_value}</span></td>
+              <td>${d.rated_on.split(' ')[0]}</td>
+            </tr>`).join('');
+                    return firstRow + extraRows;
+                }).join('')}
         </tbody>
       </table>`;
             } else {
@@ -395,14 +417,33 @@
 
         function renderWatchlistTable(watchlist, titles) {
             if (watchlist.length) {
+                const detailMap = {};
+                window.adminData.watchlist_detail.forEach(w => {
+                    if (!detailMap[w.movie_id]) detailMap[w.movie_id] = [];
+                    detailMap[w.movie_id].push(w);
+                });
+
                 document.getElementById('watchlistTable').innerHTML = `
       <table class="movie-table">
-        <thead><tr><th>Movie Name</th><th>Total Saves</th></tr></thead>
-        <tbody>${watchlist.map(w => `
-          <tr>
-            <td><a href="/movie/${w.movie_id}" style="color:var(--gold);text-decoration:none;">${titles[w.movie_id] || w.movie_id}</a></td>
-            <td>${w.total}</td>
-          </tr>`).join('')}
+        <thead><tr><th>Movie Name</th><th>Username</th><th>Email</th><th>Added On</th><th>Total Saves</th></tr></thead>
+        <tbody>${watchlist.map(w => {
+                    const details = detailMap[w.movie_id] || [];
+                    const firstRow = `
+            <tr>
+              <td rowspan="${details.length || 1}"><a href="/movie/${w.movie_id}" style="color:var(--gold);text-decoration:none;">${titles[w.movie_id] || w.movie_id}</a></td>
+              <td>${details[0] ? details[0].username : '-'}</td>
+              <td>${details[0] ? details[0].email : '-'}</td>
+              <td>${details[0] ? details[0].added_on.split(' ')[0] : '-'}</td>
+              <td rowspan="${details.length || 1}">${w.total}</td>
+            </tr>`;
+                    const extraRows = details.slice(1).map(d => `
+            <tr>
+              <td>${d.username}</td>
+              <td>${d.email}</td>
+              <td>${d.added_on.split(' ')[0]}</td>
+            </tr>`).join('');
+                    return firstRow + extraRows;
+                }).join('')}
         </tbody>
       </table>`;
             } else {
