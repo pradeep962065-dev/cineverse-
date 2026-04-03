@@ -64,7 +64,7 @@
         }
 
         .wrap {
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
             padding: 40px 48px;
         }
@@ -77,14 +77,16 @@
             margin-bottom: 24px;
         }
 
-        .search-wrap {
+        .search-row {
             display: flex;
             gap: 12px;
             margin-bottom: 32px;
+            flex-wrap: wrap;
         }
 
-        .search-wrap input {
+        .search-row input {
             flex: 1;
+            min-width: 200px;
             padding: 12px 16px;
             background: var(--card2);
             border: 1px solid var(--border);
@@ -95,11 +97,11 @@
             font-family: 'DM Sans', sans-serif;
         }
 
-        .search-wrap input:focus {
+        .search-row input:focus {
             border-color: var(--gold);
         }
 
-        .search-wrap button {
+        .search-row button {
             padding: 12px 24px;
             background: linear-gradient(135deg, var(--gold), #c9962a);
             border: none;
@@ -109,6 +111,15 @@
             letter-spacing: 1px;
             color: #0a0800;
             cursor: pointer;
+        }
+
+        .search-row button.secondary {
+            background: var(--card2);
+            color: var(--muted);
+            border: 1px solid var(--border);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            letter-spacing: 0;
         }
 
         .stats-grid {
@@ -156,13 +167,14 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 40px;
+            font-size: 13px;
         }
 
         .movie-table th {
-            background: var(--card2);
-            padding: 12px 16px;
+            background: #161b27;
+            padding: 10px 12px;
             text-align: left;
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--muted);
@@ -170,9 +182,8 @@
         }
 
         .movie-table td {
-            padding: 12px 16px;
+            padding: 10px 12px;
             border-bottom: 1px solid var(--border);
-            font-size: 14px;
         }
 
         .movie-table tr:hover td {
@@ -197,7 +208,8 @@
             color: var(--yellow);
         }
 
-        .badge-goforit {
+        .badge-goforit,
+        .badge-go {
             background: rgba(39, 174, 96, 0.15);
             color: var(--green);
         }
@@ -256,6 +268,36 @@
                 transform: rotate(360deg);
             }
         }
+
+        .mode-indicator {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-block;
+            margin-bottom: 16px;
+        }
+
+        .mode-movie {
+            background: rgba(232, 184, 75, 0.15);
+            color: var(--gold);
+            border: 1px solid rgba(232, 184, 75, 0.3);
+        }
+
+        .mode-date {
+            background: rgba(52, 152, 219, 0.15);
+            color: var(--blue);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        @media(max-width:768px) {
+            .wrap {
+                padding: 24px 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
     </style>
 </head>
 
@@ -272,11 +314,15 @@
     <div class="wrap">
         <div class="page-title">📊 Admin Dashboard</div>
 
-        <!-- Search Bar -->
-        <div class="search-wrap">
-            <input type="text" id="searchInput" placeholder="Search movie name..." oninput="searchMovie()" />
-            <button onclick="searchMovie()">SEARCH</button>
+        <!-- Search Row -->
+        <div class="search-row">
+            <input type="text" id="movieSearch" placeholder="🎬 Search by movie name..." oninput="applyFilters()" />
+            <input type="date" id="dateSearch" onchange="applyFilters()" />
+            <button onclick="applyFilters()">SEARCH</button>
+            <button class="secondary" onclick="clearFilters()">✕ Clear</button>
         </div>
+
+        <div id="modeIndicator"></div>
 
         <!-- Stats -->
         <div class="stats-grid" id="statsGrid">
@@ -316,7 +362,6 @@
                 <div class="spinner"></div>
             </div>
         </div>
-
     </div>
 
     <script>
@@ -347,167 +392,145 @@
                 ])];
 
                 const titles = {};
-                await Promise.all(allMovieIds.map(async id => {
-                    titles[id] = await getMovieTitle(id);
-                }));
+                await Promise.all(allMovieIds.map(async id => { titles[id] = await getMovieTitle(id); }));
 
                 window.adminData = data;
                 window.movieTitles = titles;
 
-                renderRatingsTable(data.ratings, titles);
-
-                if (data.date_ratings.length) {
-                    document.getElementById('dateGrid').innerHTML = data.date_ratings.map(d => `
-        <div class="date-card">
-          <div class="date-text">${d.date}</div>
-          <div class="date-count">${d.total}</div>
-        </div>`).join('');
-                } else {
-                    document.getElementById('dateGrid').innerHTML = '<p style="color:var(--muted);padding:20px;">No data yet.</p>';
-                }
-
-                renderWatchlistTable(data.watchlist, titles);
-                renderVibesTable(data.vibes, titles);
+                applyFilters();
 
             } catch (e) { console.error(e); }
         }
 
-        function renderRatingsTable(ratings, titles) {
-            if (ratings.length) {
-                // Group ratings_detail by movie_id
-                const detailMap = {};
-                window.adminData.ratings_detail.forEach(r => {
-                    if (!detailMap[r.movie_id]) detailMap[r.movie_id] = [];
-                    detailMap[r.movie_id].push(r);
-                });
+        function applyFilters() {
+            if (!window.adminData) return;
+            const movieQuery = document.getElementById('movieSearch').value.trim().toLowerCase();
+            const dateQuery = document.getElementById('dateSearch').value;
+            const indicator = document.getElementById('modeIndicator');
 
-                document.getElementById('ratingsTable').innerHTML = `
-      <table class="movie-table">
-        <thead><tr><th>Movie Name</th><th>Username</th><th>Email</th><th>Rating</th><th>Date</th><th>Total</th><th>Skip</th><th>Timepass</th><th>Go for It</th><th>Perfection</th></tr></thead>
-        <tbody>${ratings.map(r => {
-                    const details = detailMap[r.movie_id] || [];
-                    const firstRow = `
-            <tr>
-              <td rowspan="${details.length || 1}"><a href="/movie/${r.movie_id}" style="color:var(--gold);text-decoration:none;">${titles[r.movie_id] || r.movie_id}</a></td>
-              <td>${details[0] ? details[0].username : '-'}</td>
-              <td>${details[0] ? details[0].email : '-'}</td>
-              <td><span class="badge badge-${(details[0]?.meter_value || '').toLowerCase().replace(/ /g, '')}">${details[0]?.meter_value || '-'}</span></td>
-              <td>${details[0] ? details[0].rated_on.split(' ')[0] : '-'}</td>
-              <td rowspan="${details.length || 1}">${r.total}</td>
-              <td rowspan="${details.length || 1}"><span class="badge badge-skip">${r.skip}</span></td>
-              <td rowspan="${details.length || 1}"><span class="badge badge-timepass">${r.timepass}</span></td>
-              <td rowspan="${details.length || 1}"><span class="badge badge-goforit">${r.goforit}</span></td>
-              <td rowspan="${details.length || 1}"><span class="badge badge-perfection">${r.perfection}</span></td>
-            </tr>`;
-                    const extraRows = details.slice(1).map(d => `
-            <tr>
-              <td>${d.username}</td>
-              <td>${d.email}</td>
-              <td><span class="badge badge-${d.meter_value.toLowerCase().replace(/ /g, '')}">${d.meter_value}</span></td>
-              <td>${d.rated_on.split(' ')[0]}</td>
-            </tr>`).join('');
-                    return firstRow + extraRows;
-                }).join('')}
-        </tbody>
-      </table>`;
+            if (dateQuery) {
+                // DATE SEARCH MODE
+                indicator.innerHTML = `<span class="mode-indicator mode-date">📅 Showing results for date: ${dateQuery}</span>`;
+
+                // Filter ratings_detail by date
+                const dateRatings = window.adminData.ratings_detail.filter(r => r.rated_on && r.rated_on.startsWith(dateQuery));
+                const dateMovieIds = [...new Set(dateRatings.map(r => r.movie_id))];
+
+                // Get summary for those movies
+                const filteredSummary = window.adminData.ratings
+                    .filter(r => dateMovieIds.includes(r.movie_id))
+                    .sort((a, b) => b.total - a.total);
+
+                renderRatingsTableWithDetail(filteredSummary, window.movieTitles, dateRatings);
+
+                // Date grid - show only that date
+                renderDateGrid([{ date: dateQuery, total: dateRatings.length }]);
+
+                // Watchlist on that date
+                const dateWatchlist = window.adminData.watchlist_detail.filter(w => w.added_on && w.added_on.startsWith(dateQuery));
+                const dateWatchIds = [...new Set(dateWatchlist.map(w => w.movie_id))];
+                const filteredWatch = window.adminData.watchlist
+                    .filter(w => dateWatchIds.includes(w.movie_id))
+                    .sort((a, b) => b.total - a.total);
+                renderWatchlistTableWithDetail(filteredWatch, window.movieTitles, dateWatchlist);
+
+                // Vibes on that date - show all vibes for movies rated that day
+                const filteredVibes = window.adminData.vibes
+                    .filter(v => dateMovieIds.includes(v.movie_id))
+                    .sort((a, b) => b.total - a.total);
+                const filteredVibesDetail = window.adminData.vibes_detail.filter(v => dateMovieIds.includes(v.movie_id));
+                renderVibesTableWithDetail(filteredVibes, window.movieTitles, filteredVibesDetail);
+
+            } else if (movieQuery) {
+                // MOVIE SEARCH MODE
+                indicator.innerHTML = `<span class="mode-indicator mode-movie">🎬 Showing results for: "${movieQuery}"</span>`;
+
+                const filteredRatings = window.adminData.ratings
+                    .filter(r => (window.movieTitles[r.movie_id] || '').toLowerCase().includes(movieQuery) || r.movie_id.toLowerCase().includes(movieQuery))
+                    .sort((a, b) => b.total - a.total);
+
+                const matchedIds = new Set(filteredRatings.map(r => r.movie_id));
+                const filteredRatingsDetail = window.adminData.ratings_detail.filter(r => matchedIds.has(r.movie_id));
+
+                renderRatingsTableWithDetail(filteredRatings, window.movieTitles, filteredRatingsDetail);
+
+                // Date grid - only dates for this movie
+                const filteredDates = window.adminData.movie_date_ratings.filter(d => matchedIds.has(d.movie_id));
+                renderDateGrid(filteredDates);
+
+                const filteredWatch = window.adminData.watchlist
+                    .filter(w => (window.movieTitles[w.movie_id] || '').toLowerCase().includes(movieQuery))
+                    .sort((a, b) => b.total - a.total);
+                const filteredWatchDetail = window.adminData.watchlist_detail.filter(w => filteredWatch.some(fw => fw.movie_id === w.movie_id));
+                renderWatchlistTableWithDetail(filteredWatch, window.movieTitles, filteredWatchDetail);
+
+                const filteredVibes = window.adminData.vibes
+                    .filter(v => (window.movieTitles[v.movie_id] || '').toLowerCase().includes(movieQuery))
+                    .sort((a, b) => b.total - a.total);
+                const filteredVibesDetail = window.adminData.vibes_detail.filter(v => filteredVibes.some(fv => fv.movie_id === v.movie_id));
+                renderVibesTableWithDetail(filteredVibes, window.movieTitles, filteredVibesDetail);
+
             } else {
-                document.getElementById('ratingsTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No ratings yet.</p>';
-            }
-        }
-
-        function renderWatchlistTable(watchlist, titles) {
-            if (watchlist.length) {
-                const detailMap = {};
-                window.adminData.watchlist_detail.forEach(w => {
-                    if (!detailMap[w.movie_id]) detailMap[w.movie_id] = [];
-                    detailMap[w.movie_id].push(w);
-                });
-
-                document.getElementById('watchlistTable').innerHTML = `
-      <table class="movie-table">
-        <thead><tr><th>Movie Name</th><th>Username</th><th>Email</th><th>Added On</th><th>Total Saves</th></tr></thead>
-        <tbody>${watchlist.map(w => {
-                    const details = detailMap[w.movie_id] || [];
-                    const firstRow = `
-            <tr>
-              <td rowspan="${details.length || 1}"><a href="/movie/${w.movie_id}" style="color:var(--gold);text-decoration:none;">${titles[w.movie_id] || w.movie_id}</a></td>
-              <td>${details[0] ? details[0].username : '-'}</td>
-              <td>${details[0] ? details[0].email : '-'}</td>
-              <td>${details[0] ? details[0].added_on.split(' ')[0] : '-'}</td>
-              <td rowspan="${details.length || 1}">${w.total}</td>
-            </tr>`;
-                    const extraRows = details.slice(1).map(d => `
-            <tr>
-              <td>${d.username}</td>
-              <td>${d.email}</td>
-              <td>${d.added_on.split(' ')[0]}</td>
-            </tr>`).join('');
-                    return firstRow + extraRows;
-                }).join('')}
-        </tbody>
-      </table>`;
-            } else {
-                document.getElementById('watchlistTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No watchlist data yet.</p>';
-            }
-        }
-
-        function renderVibesTable(vibes, titles) {
-            if (vibes.length) {
-                document.getElementById('vibesTable').innerHTML = `
-      <table class="movie-table">
-        <thead><tr><th>Movie Name</th><th>Total</th><th>Action</th><th>Romance</th><th>Comedy</th><th>Thriller</th><th>Drama</th></tr></thead>
-        <tbody>${vibes.map(v => `
-          <tr>
-            <td><a href="/movie/${v.movie_id}" style="color:var(--gold);text-decoration:none;">${titles[v.movie_id] || v.movie_id}</a></td>
-            <td>${v.total}</td>
-            <td>${v.action}%</td>
-            <td>${v.romance}%</td>
-            <td>${v.comedy}%</td>
-            <td>${v.thriller}%</td>
-            <td>${v.drama}%</td>
-          </tr>`).join('')}
-        </tbody>
-      </table>`;
-            } else {
-                document.getElementById('vibesTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No vibe data yet.</p>';
-            }
-        }
-
-        function searchMovie() {
-            const query = document.getElementById('searchInput').value.trim().toLowerCase();
-            if (!query) {
-                renderRatingsTable(window.adminData.ratings, window.movieTitles);
-                renderWatchlistTable(window.adminData.watchlist, window.movieTitles);
-                renderVibesTable(window.adminData.vibes, window.movieTitles);
+                // SHOW ALL - sorted by total ratings descending
+                indicator.innerHTML = '';
+                const sortedRatings = [...window.adminData.ratings].sort((a, b) => b.total - a.total);
+                renderRatingsTableWithDetail(sortedRatings, window.movieTitles, window.adminData.ratings_detail);
                 renderDateGrid(window.adminData.date_ratings);
+                const sortedWatch = [...window.adminData.watchlist].sort((a, b) => b.total - a.total);
+                renderWatchlistTableWithDetail(sortedWatch, window.movieTitles, window.adminData.watchlist_detail);
+                const sortedVibes = [...window.adminData.vibes].sort((a, b) => b.total - a.total);
+                renderVibesTableWithDetail(sortedVibes, window.movieTitles, window.adminData.vibes_detail);
+            }
+        }
+
+        function clearFilters() {
+            document.getElementById('movieSearch').value = '';
+            document.getElementById('dateSearch').value = '';
+            applyFilters();
+        }
+
+        function renderRatingsTableWithDetail(ratings, titles, details) {
+            if (!ratings.length) {
+                document.getElementById('ratingsTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No ratings found.</p>';
                 return;
             }
-            const filteredRatings = window.adminData.ratings.filter(r =>
-                (window.movieTitles[r.movie_id] || '').toLowerCase().includes(query) || r.movie_id.toLowerCase().includes(query)
-            );
-            const filteredWatchlist = window.adminData.watchlist.filter(w =>
-                (window.movieTitles[w.movie_id] || '').toLowerCase().includes(query) || w.movie_id.toLowerCase().includes(query)
-            );
-            const filteredVibes = window.adminData.vibes.filter(v =>
-                (window.movieTitles[v.movie_id] || '').toLowerCase().includes(query) || v.movie_id.toLowerCase().includes(query)
-            );
+            const detailMap = {};
+            details.forEach(r => {
+                if (!detailMap[r.movie_id]) detailMap[r.movie_id] = [];
+                detailMap[r.movie_id].push(r);
+            });
 
-            // Get movie_ids that match search
-            const matchedIds = new Set([
-                ...filteredRatings.map(r => r.movie_id),
-                ...filteredWatchlist.map(w => w.movie_id),
-                ...filteredVibes.map(v => v.movie_id)
-            ]);
+            let rows = '';
+            ratings.forEach(r => {
+                const dets = detailMap[r.movie_id] || [];
+                const span = Math.max(dets.length, 1);
+                rows += `<tr>
+      <td rowspan="${span}"><a href="/movie/${r.movie_id}" style="color:var(--gold);text-decoration:none;">${titles[r.movie_id] || r.movie_id}</a></td>
+      <td>${dets[0] ? dets[0].username : '-'}</td>
+      <td>${dets[0] ? dets[0].email : '-'}</td>
+      <td>${dets[0] ? `<span class="badge badge-${(dets[0].meter_value || '').toLowerCase().replace(/ /g, '')}">${dets[0].meter_value}</span>` : '-'}</td>
+      <td>${dets[0] ? dets[0].rated_on.split(' ')[0] : '-'}</td>
+      <td rowspan="${span}">${r.total}</td>
+      <td rowspan="${span}"><span class="badge badge-skip">${r.skip}</span></td>
+      <td rowspan="${span}"><span class="badge badge-timepass">${r.timepass}</span></td>
+      <td rowspan="${span}"><span class="badge badge-goforit">${r.goforit}</span></td>
+      <td rowspan="${span}"><span class="badge badge-perfection">${r.perfection}</span></td>
+    </tr>`;
+                dets.slice(1).forEach(d => {
+                    rows += `<tr>
+        <td>${d.username}</td>
+        <td>${d.email}</td>
+        <td><span class="badge badge-${(d.meter_value || '').toLowerCase().replace(/ /g, '')}">${d.meter_value}</span></td>
+        <td>${d.rated_on.split(' ')[0]}</td>
+      </tr>`;
+                });
+            });
 
-            // Filter date_ratings for only those movies
-            const filteredDates = window.adminData.movie_date_ratings.filter(d =>
-                matchedIds.has(d.movie_id)
-            );
-
-            renderRatingsTable(filteredRatings, window.movieTitles);
-            renderWatchlistTable(filteredWatchlist, window.movieTitles);
-            renderVibesTable(filteredVibes, window.movieTitles);
-            renderDateGrid(filteredDates);
+            document.getElementById('ratingsTable').innerHTML = `
+    <table class="movie-table">
+      <thead><tr><th>Movie Name</th><th>Username</th><th>Email</th><th>Rating</th><th>Date</th><th>Total</th><th>Skip</th><th>Timepass</th><th>Go for It</th><th>Perfection</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
         }
 
         function renderDateGrid(dates) {
@@ -518,8 +541,87 @@
         <div class="date-count">${d.total}</div>
       </div>`).join('');
             } else {
-                document.getElementById('dateGrid').innerHTML = '<p style="color:var(--muted);padding:20px;">No date data for this movie.</p>';
+                document.getElementById('dateGrid').innerHTML = '<p style="color:var(--muted);padding:20px;">No date data found.</p>';
             }
+        }
+
+        function renderWatchlistTableWithDetail(watchlist, titles, details) {
+            if (!watchlist.length) {
+                document.getElementById('watchlistTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No watchlist data found.</p>';
+                return;
+            }
+            const detailMap = {};
+            details.forEach(w => {
+                if (!detailMap[w.movie_id]) detailMap[w.movie_id] = [];
+                detailMap[w.movie_id].push(w);
+            });
+
+            let rows = '';
+            watchlist.forEach(w => {
+                const dets = detailMap[w.movie_id] || [];
+                const span = Math.max(dets.length, 1);
+                rows += `<tr>
+      <td rowspan="${span}"><a href="/movie/${w.movie_id}" style="color:var(--gold);text-decoration:none;">${titles[w.movie_id] || w.movie_id}</a></td>
+      <td>${dets[0] ? dets[0].username : '-'}</td>
+      <td>${dets[0] ? dets[0].email : '-'}</td>
+      <td>${dets[0] ? dets[0].added_on.split(' ')[0] : '-'}</td>
+      <td rowspan="${span}">${w.total}</td>
+    </tr>`;
+                dets.slice(1).forEach(d => {
+                    rows += `<tr>
+        <td>${d.username}</td>
+        <td>${d.email}</td>
+        <td>${d.added_on.split(' ')[0]}</td>
+      </tr>`;
+                });
+            });
+
+            document.getElementById('watchlistTable').innerHTML = `
+    <table class="movie-table">
+      <thead><tr><th>Movie Name</th><th>Username</th><th>Email</th><th>Added On</th><th>Total Saves</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+        }
+
+        function renderVibesTableWithDetail(vibes, titles, details) {
+            if (!vibes.length) {
+                document.getElementById('vibesTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No vibe data found.</p>';
+                return;
+            }
+            const detailMap = {};
+            details.forEach(v => {
+                if (!detailMap[v.movie_id]) detailMap[v.movie_id] = [];
+                detailMap[v.movie_id].push(v);
+            });
+
+            let rows = '';
+            vibes.forEach(v => {
+                const dets = detailMap[v.movie_id] || [];
+                const span = Math.max(dets.length, 1);
+                rows += `<tr>
+      <td rowspan="${span}"><a href="/movie/${v.movie_id}" style="color:var(--gold);text-decoration:none;">${titles[v.movie_id] || v.movie_id}</a></td>
+      <td>${dets[0] ? dets[0].username : '-'}</td>
+      <td>${dets[0] ? dets[0].email : '-'}</td>
+      <td rowspan="${span}">${v.total}</td>
+      <td rowspan="${span}">${v.action}%</td>
+      <td rowspan="${span}">${v.romance}%</td>
+      <td rowspan="${span}">${v.comedy}%</td>
+      <td rowspan="${span}">${v.thriller}%</td>
+      <td rowspan="${span}">${v.drama}%</td>
+    </tr>`;
+                dets.slice(1).forEach(d => {
+                    rows += `<tr>
+        <td>${d.username}</td>
+        <td>${d.email}</td>
+      </tr>`;
+                });
+            });
+
+            document.getElementById('vibesTable').innerHTML = `
+    <table class="movie-table">
+      <thead><tr><th>Movie Name</th><th>Username</th><th>Email</th><th>Total</th><th>Action</th><th>Romance</th><th>Comedy</th><th>Thriller</th><th>Drama</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
         }
 
         loadStats();

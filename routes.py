@@ -400,6 +400,17 @@ def admin_stats():
         func.avg(VibeChart.drama).label('drama')
     ).group_by(VibeChart.movie_id).all()
 
+    vibes_detail = db.session.query(
+        VibeChart.movie_id,
+        User.username,
+        User.email,
+        VibeChart.action,
+        VibeChart.romance,
+        VibeChart.comedy,
+        VibeChart.thriller,
+        VibeChart.drama
+    ).join(User, VibeChart.user_id == User.user_id).all()
+
     # Get comment counts
     comments = db.session.query(
         Comment.movie_id,
@@ -427,6 +438,7 @@ def admin_stats():
         'watchlist_detail': [{'movie_id': w.movie_id, 'username': w.username, 'email': w.email, 'added_on': str(w.added_on)} for w in watchlist_detail],
         'watchlist': [{'movie_id': w.movie_id, 'total': w.total} for w in watchlist],
         'vibes': [{'movie_id': v.movie_id, 'total': v.total, 'action': round(v.action or 0, 1), 'romance': round(v.romance or 0, 1), 'comedy': round(v.comedy or 0, 1), 'thriller': round(v.thriller or 0, 1), 'drama': round(v.drama or 0, 1)} for v in vibes],
+        'vibes_detail': [{'movie_id': v.movie_id, 'username': v.username, 'email': v.email, 'action': round(v.action or 0, 1), 'romance': round(v.romance or 0, 1), 'comedy': round(v.comedy or 0, 1), 'thriller': round(v.thriller or 0, 1), 'drama': round(v.drama or 0, 1)} for v in vibes_detail],
         'comments': [{'movie_id': c.movie_id, 'total': c.total} for c in comments],
         'date_ratings': [{'date': str(d.date), 'total': d.total} for d in date_ratings],
         'movie_date_ratings': [{'movie_id': d.movie_id, 'date': str(d.date), 'total': d.total} for d in movie_date_ratings],
