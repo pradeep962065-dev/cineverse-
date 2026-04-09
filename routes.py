@@ -445,6 +445,22 @@ def admin_stats():
         'total_users': total_users
     })
 
+    # API Vibe Results
+@app.route('/api/vibe-results/<imdb_id>')
+def api_vibe_results(imdb_id):
+    from sqlalchemy import func
+    result = db.session.query(
+        func.avg(VibeChart.action).label('action'),
+        func.avg(VibeChart.romance).label('romance'),
+        func.avg(VibeChart.comedy).label('comedy'),
+        func.avg(VibeChart.thriller).label('thriller'),
+        func.avg(VibeChart.drama).label('drama'),
+        func.count(VibeChart.vibe_id).label('total')
+    ).filter(VibeChart.movie_id == imdb_id).first()
+    if result and result.total:
+        return jsonify({'has_data': True, 'action': round(result.action or 0, 1), 'romance': round(result.romance or 0, 1), 'comedy': round(result.comedy or 0, 1), 'thriller': round(result.thriller or 0, 1), 'drama': round(result.drama or 0, 1), 'total': result.total})
+    return jsonify({'has_data': False})
+
 # Email Verification
 @app.route('/verify/<token>')
 def verify_email(token):

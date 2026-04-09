@@ -974,6 +974,7 @@
           </div>
           <div class="vibe-total">Total: <span id="vibeTotal">0%</span></div>
           <button class="submit-vibe" onclick="submitVibe()">Submit Vibe Chart</button>
+          <div id="vibeResults"></div>
         </div>
 
         <!-- Streaming -->
@@ -1303,11 +1304,39 @@
         }
       } catch (e) { }
     }
+
+    async function loadVibeResults() {
+      try {
+        const res = await fetch(`/api/vibe-results/${imdbID}`);
+        const data = await res.json();
+        if (data.has_data) {
+          const vibeResultsDiv = document.getElementById('vibeResults');
+          if (vibeResultsDiv) {
+            const colors = { action: '#e74c3c', romance: '#e91e8c', comedy: '#f39c12', thriller: '#9b59b6', drama: '#3498db' };
+            vibeResultsDiv.innerHTML = `
+          <div style="margin-top:20px;padding:16px;background:var(--card2);border-radius:10px;">
+            <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">🌍 Community Vibe (${data.total} votes)</div>
+            ${['action', 'romance', 'comedy', 'thriller', 'drama'].map(g => `
+              <div style="margin-bottom:8px;">
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                  <span style="text-transform:capitalize;">${g}</span>
+                  <span style="color:var(--gold)">${data[g]}%</span>
+                </div>
+                <div style="height:6px;background:var(--card);border-radius:3px;">
+                  <div style="width:${data[g]}%;height:100%;background:${colors[g]};border-radius:3px;"></div>
+                </div>
+              </div>`).join('')}
+          </div>`;
+          }
+        }
+      } catch (e) { }
+    }
     // Init
     loadComments();
     loadMovie();
     loadUserRating();
     loadUserVibe();
+    loadVibeResults();
   </script>
 </body>
 

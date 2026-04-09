@@ -18,7 +18,6 @@
 
         :root {
             --bg: #07090e;
-            --surface: #0d1017;
             --card: #111520;
             --card2: #161b27;
             --border: rgba(255, 255, 255, 0.06);
@@ -77,14 +76,16 @@
             margin-bottom: 24px;
         }
 
+        /* Search */
         .search-row {
             display: flex;
             gap: 12px;
-            margin-bottom: 32px;
+            margin-bottom: 16px;
             flex-wrap: wrap;
+            align-items: center;
         }
 
-        .search-row input {
+        .search-row input[type="text"] {
             flex: 1;
             min-width: 200px;
             padding: 12px 16px;
@@ -97,11 +98,32 @@
             font-family: 'DM Sans', sans-serif;
         }
 
-        .search-row input:focus {
+        .search-row input[type="text"]:focus {
             border-color: var(--gold);
         }
 
-        .search-row button {
+        .date-input-wrap {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .date-input-wrap input[type="date"] {
+            padding: 12px 16px;
+            background: var(--card2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 14px;
+            outline: none;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .date-input-wrap input[type="date"]:focus {
+            border-color: var(--gold);
+        }
+
+        .btn-search {
             padding: 12px 24px;
             background: linear-gradient(135deg, var(--gold), #c9962a);
             border: none;
@@ -113,15 +135,68 @@
             cursor: pointer;
         }
 
-        .search-row button.secondary {
+        .btn-clear {
+            padding: 12px 20px;
             background: var(--card2);
             color: var(--muted);
             border: 1px solid var(--border);
+            border-radius: 8px;
             font-family: 'DM Sans', sans-serif;
             font-size: 14px;
-            letter-spacing: 0;
+            cursor: pointer;
         }
 
+        /* Message box */
+        .msg-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+
+        .msg-box {
+            padding: 32px 48px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .msg-box .msg-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .msg-box .msg-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 24px;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .msg-box .msg-text {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .msg-error {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+
+        .msg-error .msg-title {
+            color: var(--red);
+        }
+
+        .msg-info {
+            background: rgba(52, 152, 219, 0.1);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        .msg-info .msg-title {
+            color: var(--blue);
+        }
+
+        /* Stats */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -151,6 +226,7 @@
             margin-top: 4px;
         }
 
+        /* Section */
         .section-title {
             font-family: 'Bebas Neue', sans-serif;
             font-size: 24px;
@@ -163,6 +239,18 @@
             color: var(--gold);
         }
 
+        .active-filter-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 20px;
+            background: rgba(52, 152, 219, 0.15);
+            color: var(--blue);
+            border: 1px solid rgba(52, 152, 219, 0.3);
+        }
+
+        /* Table */
         .movie-table {
             width: 100%;
             border-collapse: collapse;
@@ -208,8 +296,7 @@
             color: var(--yellow);
         }
 
-        .badge-goforit,
-        .badge-go {
+        .badge-goforit {
             background: rgba(39, 174, 96, 0.15);
             color: var(--green);
         }
@@ -219,6 +306,7 @@
             color: var(--blue);
         }
 
+        /* Date grid */
         .date-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -247,6 +335,7 @@
             color: var(--gold);
         }
 
+        /* Loading */
         .loading {
             text-align: center;
             padding: 40px;
@@ -269,26 +358,6 @@
             }
         }
 
-        .mode-indicator {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            display: inline-block;
-            margin-bottom: 16px;
-        }
-
-        .mode-movie {
-            background: rgba(232, 184, 75, 0.15);
-            color: var(--gold);
-            border: 1px solid rgba(232, 184, 75, 0.3);
-        }
-
-        .mode-date {
-            background: rgba(52, 152, 219, 0.15);
-            color: var(--blue);
-            border: 1px solid rgba(52, 152, 219, 0.3);
-        }
-
         @media(max-width:768px) {
             .wrap {
                 padding: 24px 16px;
@@ -296,6 +365,10 @@
 
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+
+            nav {
+                padding: 0 20px;
             }
         }
     </style>
@@ -316,55 +389,34 @@
 
         <!-- Search Row -->
         <div class="search-row">
-            <input type="text" id="movieSearch" placeholder="🎬 Search by movie name..." oninput="applyFilters()" />
-            <input type="date" id="dateSearch" onchange="applyFilters()" />
-            <button onclick="applyFilters()">SEARCH</button>
-            <button class="secondary" onclick="clearFilters()">✕ Clear</button>
+            <input type="text" id="movieSearch" placeholder="🎬 Search by movie name..." oninput="onMovieSearch()" />
+            <div class="date-input-wrap">
+                <input type="date" id="dateSearch" />
+                <button class="btn-search" onclick="onDateSearch()">SEARCH DATE</button>
+            </div>
+            <button class="btn-clear" onclick="clearAll()">✕ Clear All</button>
         </div>
 
-        <div id="modeIndicator"></div>
-
-        <!-- Stats -->
+        <!-- Stats always visible -->
         <div class="stats-grid" id="statsGrid">
             <div class="loading">
                 <div class="spinner"></div>
             </div>
         </div>
 
-        <!-- Ratings Table -->
-        <div class="section-title">🎬 Movie <span>Ratings</span></div>
-        <div id="ratingsTable">
+        <!-- Main Content Area -->
+        <div id="mainContent">
             <div class="loading">
-                <div class="spinner"></div>
-            </div>
-        </div>
-
-        <!-- Date Wise -->
-        <div class="section-title">📅 Date Wise <span>Activity</span></div>
-        <div class="date-grid" id="dateGrid">
-            <div class="loading">
-                <div class="spinner"></div>
-            </div>
-        </div>
-
-        <!-- Watchlist -->
-        <div class="section-title">📌 Watchlist <span>Stats</span></div>
-        <div id="watchlistTable">
-            <div class="loading">
-                <div class="spinner"></div>
-            </div>
-        </div>
-
-        <!-- Vibes -->
-        <div class="section-title">🎭 Vibe <span>Chart Stats</span></div>
-        <div id="vibesTable">
-            <div class="loading">
-                <div class="spinner"></div>
+                <div class="spinner"></div> Loading data...
             </div>
         </div>
     </div>
 
     <script>
+        function getToday() {
+            return new Date().toISOString().split('T')[0];
+        }
+
         async function getMovieTitle(movieId) {
             try {
                 const res = await fetch(`/api/movie/${movieId}`);
@@ -385,127 +437,162 @@
       <div class="stat-card"><div class="stat-num">${data.watchlist.reduce((a, w) => a + w.total, 0)}</div><div class="stat-label">Total Watchlists</div></div>
     `;
 
-                const allMovieIds = [...new Set([
+                const allIds = [...new Set([
                     ...data.ratings.map(r => r.movie_id),
                     ...data.watchlist.map(w => w.movie_id),
                     ...data.vibes.map(v => v.movie_id)
                 ])];
-
                 const titles = {};
-                await Promise.all(allMovieIds.map(async id => { titles[id] = await getMovieTitle(id); }));
+                await Promise.all(allIds.map(async id => { titles[id] = await getMovieTitle(id); }));
 
                 window.adminData = data;
                 window.movieTitles = titles;
 
-                applyFilters();
-
+                showAllData();
             } catch (e) { console.error(e); }
         }
 
-        function applyFilters() {
-            if (!window.adminData) return;
-            const movieQuery = document.getElementById('movieSearch').value.trim().toLowerCase();
-            const dateQuery = document.getElementById('dateSearch').value;
-            const indicator = document.getElementById('modeIndicator');
-
-            if (dateQuery) {
-                // DATE SEARCH MODE
-                indicator.innerHTML = `<span class="mode-indicator mode-date">📅 Showing results for date: ${dateQuery}</span>`;
-
-                // Filter ratings_detail by date
-                const dateRatings = window.adminData.ratings_detail.filter(r => r.rated_on && r.rated_on.startsWith(dateQuery));
-                const dateMovieIds = [...new Set(dateRatings.map(r => r.movie_id))];
-
-                // Get summary for those movies
-                const filteredSummary = window.adminData.ratings
-                    .filter(r => dateMovieIds.includes(r.movie_id))
-                    .sort((a, b) => b.total - a.total);
-
-                renderRatingsTableWithDetail(filteredSummary, window.movieTitles, dateRatings);
-
-                // Date grid - show only that date
-                renderDateGrid([{ date: dateQuery, total: dateRatings.length }]);
-
-                // Watchlist on that date
-                const dateWatchlist = window.adminData.watchlist_detail.filter(w => w.added_on && w.added_on.startsWith(dateQuery));
-                const dateWatchIds = [...new Set(dateWatchlist.map(w => w.movie_id))];
-                const filteredWatch = window.adminData.watchlist
-                    .filter(w => dateWatchIds.includes(w.movie_id))
-                    .sort((a, b) => b.total - a.total);
-                renderWatchlistTableWithDetail(filteredWatch, window.movieTitles, dateWatchlist);
-
-                // Vibes on that date - show all vibes for movies rated that day
-                const filteredVibes = window.adminData.vibes
-                    .filter(v => dateMovieIds.includes(v.movie_id))
-                    .sort((a, b) => b.total - a.total);
-                const filteredVibesDetail = window.adminData.vibes_detail.filter(v => dateMovieIds.includes(v.movie_id));
-                renderVibesTableWithDetail(filteredVibes, window.movieTitles, filteredVibesDetail);
-
-            } else if (movieQuery) {
-                // MOVIE SEARCH MODE
-                indicator.innerHTML = `<span class="mode-indicator mode-movie">🎬 Showing results for: "${movieQuery}"</span>`;
-
-                const filteredRatings = window.adminData.ratings
-                    .filter(r => (window.movieTitles[r.movie_id] || '').toLowerCase().includes(movieQuery) || r.movie_id.toLowerCase().includes(movieQuery))
-                    .sort((a, b) => b.total - a.total);
-
-                const matchedIds = new Set(filteredRatings.map(r => r.movie_id));
-                const filteredRatingsDetail = window.adminData.ratings_detail.filter(r => matchedIds.has(r.movie_id));
-
-                renderRatingsTableWithDetail(filteredRatings, window.movieTitles, filteredRatingsDetail);
-
-                // Date grid - only dates for this movie
-                const filteredDates = window.adminData.movie_date_ratings.filter(d => matchedIds.has(d.movie_id));
-                renderDateGrid(filteredDates);
-
-                const filteredWatch = window.adminData.watchlist
-                    .filter(w => (window.movieTitles[w.movie_id] || '').toLowerCase().includes(movieQuery))
-                    .sort((a, b) => b.total - a.total);
-                const filteredWatchDetail = window.adminData.watchlist_detail.filter(w => filteredWatch.some(fw => fw.movie_id === w.movie_id));
-                renderWatchlistTableWithDetail(filteredWatch, window.movieTitles, filteredWatchDetail);
-
-                const filteredVibes = window.adminData.vibes
-                    .filter(v => (window.movieTitles[v.movie_id] || '').toLowerCase().includes(movieQuery))
-                    .sort((a, b) => b.total - a.total);
-                const filteredVibesDetail = window.adminData.vibes_detail.filter(v => filteredVibes.some(fv => fv.movie_id === v.movie_id));
-                renderVibesTableWithDetail(filteredVibes, window.movieTitles, filteredVibesDetail);
-
-            } else {
-                // SHOW ALL - sorted by total ratings descending
-                indicator.innerHTML = '';
-                const sortedRatings = [...window.adminData.ratings].sort((a, b) => b.total - a.total);
-                renderRatingsTableWithDetail(sortedRatings, window.movieTitles, window.adminData.ratings_detail);
-                renderDateGrid(window.adminData.date_ratings);
-                const sortedWatch = [...window.adminData.watchlist].sort((a, b) => b.total - a.total);
-                renderWatchlistTableWithDetail(sortedWatch, window.movieTitles, window.adminData.watchlist_detail);
-                const sortedVibes = [...window.adminData.vibes].sort((a, b) => b.total - a.total);
-                renderVibesTableWithDetail(sortedVibes, window.movieTitles, window.adminData.vibes_detail);
-            }
-        }
-
-        function clearFilters() {
-            document.getElementById('movieSearch').value = '';
+        function onMovieSearch() {
+            // Clear date input when typing movie name
             document.getElementById('dateSearch').value = '';
-            applyFilters();
+            const query = document.getElementById('movieSearch').value.trim().toLowerCase();
+            if (!query) { showAllData(); return; }
+            showMovieSearch(query);
         }
 
-        function renderRatingsTableWithDetail(ratings, titles, details) {
-            if (!ratings.length) {
-                document.getElementById('ratingsTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No ratings found.</p>';
+        function onDateSearch() {
+            const dateVal = document.getElementById('dateSearch').value;
+            const today = getToday();
+
+            // Clear movie search
+            document.getElementById('movieSearch').value = '';
+
+            if (!dateVal) {
+                showMessage('error', '📅', 'No Date Selected', 'Please select a date before clicking Search.');
                 return;
             }
+
+            if (dateVal > today) {
+                showMessage('error', '❌', 'Invalid Date!', `You entered a future date (${dateVal}). Please enter today's date or a past date.`);
+                return;
+            }
+
+            // Valid date - check if data exists
+            showDateSearch(dateVal);
+        }
+
+        function clearAll() {
+            document.getElementById('movieSearch').value = '';
+            document.getElementById('dateSearch').value = '';
+            showAllData();
+        }
+
+        function showMessage(type, icon, title, text) {
+            document.getElementById('mainContent').innerHTML = `
+    <div class="msg-center">
+      <div class="msg-box msg-${type}">
+        <div class="msg-icon">${icon}</div>
+        <div class="msg-title">${title}</div>
+        <div class="msg-text">${text}</div>
+      </div>
+    </div>`;
+        }
+
+        function showAllData() {
+            if (!window.adminData) return;
+            const sortedRatings = [...window.adminData.ratings].sort((a, b) => b.total - a.total);
+            const sortedWatch = [...window.adminData.watchlist].sort((a, b) => b.total - a.total);
+            const sortedVibes = [...window.adminData.vibes].sort((a, b) => b.total - a.total);
+
+            document.getElementById('mainContent').innerHTML = buildFullLayout(
+                sortedRatings, window.adminData.ratings_detail,
+                window.adminData.date_ratings,
+                sortedWatch, window.adminData.watchlist_detail,
+                sortedVibes, window.adminData.vibes_detail || [],
+                null
+            );
+        }
+
+        function showMovieSearch(query) {
+            if (!window.adminData) return;
+
+            const filteredRatings = window.adminData.ratings
+                .filter(r => (window.movieTitles[r.movie_id] || '').toLowerCase().includes(query) || r.movie_id.toLowerCase().includes(query))
+                .sort((a, b) => b.total - a.total);
+
+            if (filteredRatings.length === 0) {
+                showMessage('info', '🔍', 'No Results', `No movie found matching "${query}". Try a different name.`);
+                return;
+            }
+
+            const matchedIds = new Set(filteredRatings.map(r => r.movie_id));
+            const filteredDates = window.adminData.movie_date_ratings.filter(d => matchedIds.has(d.movie_id));
+            const filteredWatch = window.adminData.watchlist.filter(w => (window.movieTitles[w.movie_id] || '').toLowerCase().includes(query)).sort((a, b) => b.total - a.total);
+            const filteredVibes = window.adminData.vibes.filter(v => (window.movieTitles[v.movie_id] || '').toLowerCase().includes(query)).sort((a, b) => b.total - a.total);
+
+            document.getElementById('mainContent').innerHTML = buildFullLayout(
+                filteredRatings, window.adminData.ratings_detail.filter(r => matchedIds.has(r.movie_id)),
+                filteredDates,
+                filteredWatch, window.adminData.watchlist_detail.filter(w => filteredWatch.some(fw => fw.movie_id === w.movie_id)),
+                filteredVibes, (window.adminData.vibes_detail || []).filter(v => filteredVibes.some(fv => fv.movie_id === v.movie_id)),
+                `🎬 Results for: "${query}"`
+            );
+        }
+
+        function showDateSearch(dateVal) {
+            if (!window.adminData) return;
+
+            const dateRatings = window.adminData.ratings_detail.filter(r => r.rated_on && r.rated_on.startsWith(dateVal));
+
+            if (dateRatings.length === 0) {
+                showMessage('info', '📭', 'No Activity Found', `No users rated any movies on ${dateVal}. Try a different date.`);
+                return;
+            }
+
+            const dateMovieIds = [...new Set(dateRatings.map(r => r.movie_id))];
+            const filteredSummary = window.adminData.ratings.filter(r => dateMovieIds.includes(r.movie_id)).sort((a, b) => b.total - a.total);
+
+            const dateWatchlist = window.adminData.watchlist_detail.filter(w => w.added_on && w.added_on.startsWith(dateVal));
+            const dateWatchIds = [...new Set(dateWatchlist.map(w => w.movie_id))];
+            const filteredWatch = window.adminData.watchlist.filter(w => dateWatchIds.includes(w.movie_id)).sort((a, b) => b.total - a.total);
+
+            const filteredVibes = window.adminData.vibes.filter(v => dateMovieIds.includes(v.movie_id)).sort((a, b) => b.total - a.total);
+            const filteredVibesDetail = (window.adminData.vibes_detail || []).filter(v => dateMovieIds.includes(v.movie_id));
+
+            document.getElementById('mainContent').innerHTML = buildFullLayout(
+                filteredSummary, dateRatings,
+                [{ date: dateVal, total: dateRatings.length }],
+                filteredWatch, dateWatchlist,
+                filteredVibes, filteredVibesDetail,
+                `📅 Activity on: ${dateVal}`
+            );
+        }
+
+        function buildFullLayout(ratings, ratingsDetail, dates, watchlist, watchlistDetail, vibes, vibesDetail, badge) {
+            return `
+    ${badge ? `<div class="active-filter-badge">${badge}</div>` : ''}
+    <div class="section-title">🎬 Movie <span>Ratings</span></div>
+    ${buildRatingsTable(ratings, ratingsDetail)}
+    <div class="section-title">📅 Date Wise <span>Activity</span></div>
+    ${buildDateGrid(dates)}
+    <div class="section-title">📌 Watchlist <span>Stats</span></div>
+    ${buildWatchlistTable(watchlist, watchlistDetail)}
+    <div class="section-title">🎭 Vibe <span>Chart Stats</span></div>
+    ${buildVibesTable(vibes, vibesDetail)}
+  `;
+        }
+
+        function buildRatingsTable(ratings, details) {
+            if (!ratings.length) return '<p style="color:var(--muted);padding:20px 0;">No ratings found.</p>';
             const detailMap = {};
-            details.forEach(r => {
-                if (!detailMap[r.movie_id]) detailMap[r.movie_id] = [];
-                detailMap[r.movie_id].push(r);
-            });
+            details.forEach(r => { if (!detailMap[r.movie_id]) detailMap[r.movie_id] = []; detailMap[r.movie_id].push(r); });
 
             let rows = '';
             ratings.forEach(r => {
                 const dets = detailMap[r.movie_id] || [];
                 const span = Math.max(dets.length, 1);
                 rows += `<tr>
-      <td rowspan="${span}"><a href="/movie/${r.movie_id}" style="color:var(--gold);text-decoration:none;">${titles[r.movie_id] || r.movie_id}</a></td>
+      <td rowspan="${span}"><a href="/movie/${r.movie_id}" style="color:var(--gold);text-decoration:none;">${window.movieTitles[r.movie_id] || r.movie_id}</a></td>
       <td>${dets[0] ? dets[0].username : '-'}</td>
       <td>${dets[0] ? dets[0].email : '-'}</td>
       <td>${dets[0] ? `<span class="badge badge-${(dets[0].meter_value || '').toLowerCase().replace(/ /g, '')}">${dets[0].meter_value}</span>` : '-'}</td>
@@ -518,88 +605,61 @@
     </tr>`;
                 dets.slice(1).forEach(d => {
                     rows += `<tr>
-        <td>${d.username}</td>
-        <td>${d.email}</td>
+        <td>${d.username}</td><td>${d.email}</td>
         <td><span class="badge badge-${(d.meter_value || '').toLowerCase().replace(/ /g, '')}">${d.meter_value}</span></td>
         <td>${d.rated_on.split(' ')[0]}</td>
       </tr>`;
                 });
             });
-
-            document.getElementById('ratingsTable').innerHTML = `
-    <table class="movie-table">
-      <thead><tr><th>Movie Name</th><th>Username</th><th>Email</th><th>Rating</th><th>Date</th><th>Total</th><th>Skip</th><th>Timepass</th><th>Go for It</th><th>Perfection</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+            return `<table class="movie-table">
+    <thead><tr><th>Movie Name</th><th>Username</th><th>Email</th><th>Rating</th><th>Date</th><th>Total</th><th>Skip</th><th>Timepass</th><th>Go for It</th><th>Perfection</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
         }
 
-        function renderDateGrid(dates) {
-            if (dates && dates.length) {
-                document.getElementById('dateGrid').innerHTML = dates.map(d => `
-      <div class="date-card">
-        <div class="date-text">${d.date}</div>
-        <div class="date-count">${d.total}</div>
-      </div>`).join('');
-            } else {
-                document.getElementById('dateGrid').innerHTML = '<p style="color:var(--muted);padding:20px;">No date data found.</p>';
-            }
+        function buildDateGrid(dates) {
+            if (!dates || !dates.length) return '<p style="color:var(--muted);padding:20px 0;">No date data found.</p>';
+            return `<div class="date-grid">${dates.map(d => `
+    <div class="date-card"><div class="date-text">${d.date}</div><div class="date-count">${d.total}</div></div>`).join('')}</div>`;
         }
 
-        function renderWatchlistTableWithDetail(watchlist, titles, details) {
-            if (!watchlist.length) {
-                document.getElementById('watchlistTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No watchlist data found.</p>';
-                return;
-            }
+        function buildWatchlistTable(watchlist, details) {
+            if (!watchlist.length) return '<p style="color:var(--muted);padding:20px 0;">No watchlist data found.</p>';
             const detailMap = {};
-            details.forEach(w => {
-                if (!detailMap[w.movie_id]) detailMap[w.movie_id] = [];
-                detailMap[w.movie_id].push(w);
-            });
+            details.forEach(w => { if (!detailMap[w.movie_id]) detailMap[w.movie_id] = []; detailMap[w.movie_id].push(w); });
 
             let rows = '';
             watchlist.forEach(w => {
                 const dets = detailMap[w.movie_id] || [];
                 const span = Math.max(dets.length, 1);
                 rows += `<tr>
-      <td rowspan="${span}"><a href="/movie/${w.movie_id}" style="color:var(--gold);text-decoration:none;">${titles[w.movie_id] || w.movie_id}</a></td>
+      <td rowspan="${span}"><a href="/movie/${w.movie_id}" style="color:var(--gold);text-decoration:none;">${window.movieTitles[w.movie_id] || w.movie_id}</a></td>
       <td>${dets[0] ? dets[0].username : '-'}</td>
       <td>${dets[0] ? dets[0].email : '-'}</td>
       <td>${dets[0] ? dets[0].added_on.split(' ')[0] : '-'}</td>
       <td rowspan="${span}">${w.total}</td>
     </tr>`;
                 dets.slice(1).forEach(d => {
-                    rows += `<tr>
-        <td>${d.username}</td>
-        <td>${d.email}</td>
-        <td>${d.added_on.split(' ')[0]}</td>
-      </tr>`;
+                    rows += `<tr><td>${d.username}</td><td>${d.email}</td><td>${d.added_on.split(' ')[0]}</td></tr>`;
                 });
             });
-
-            document.getElementById('watchlistTable').innerHTML = `
-    <table class="movie-table">
-      <thead><tr><th>Movie Name</th><th>Username</th><th>Email</th><th>Added On</th><th>Total Saves</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+            return `<table class="movie-table">
+    <thead><tr><th>Movie Name</th><th>Username</th><th>Email</th><th>Added On</th><th>Total Saves</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
         }
 
-        function renderVibesTableWithDetail(vibes, titles, details) {
-            if (!vibes.length) {
-                document.getElementById('vibesTable').innerHTML = '<p style="color:var(--muted);padding:20px;">No vibe data found.</p>';
-                return;
-            }
+        function buildVibesTable(vibes, details) {
+            if (!vibes.length) return '<p style="color:var(--muted);padding:20px 0;">No vibe data found.</p>';
             const detailMap = {};
-            details.forEach(v => {
-                if (!detailMap[v.movie_id]) detailMap[v.movie_id] = [];
-                detailMap[v.movie_id].push(v);
-            });
+            details.forEach(v => { if (!detailMap[v.movie_id]) detailMap[v.movie_id] = []; detailMap[v.movie_id].push(v); });
 
             let rows = '';
             vibes.forEach(v => {
                 const dets = detailMap[v.movie_id] || [];
                 const span = Math.max(dets.length, 1);
                 rows += `<tr>
-      <td rowspan="${span}"><a href="/movie/${v.movie_id}" style="color:var(--gold);text-decoration:none;">${titles[v.movie_id] || v.movie_id}</a></td>
+      <td rowspan="${span}"><a href="/movie/${v.movie_id}" style="color:var(--gold);text-decoration:none;">${window.movieTitles[v.movie_id] || v.movie_id}</a></td>
       <td>${dets[0] ? dets[0].username : '-'}</td>
       <td>${dets[0] ? dets[0].email : '-'}</td>
       <td rowspan="${span}">${v.total}</td>
@@ -610,18 +670,13 @@
       <td rowspan="${span}">${v.drama}%</td>
     </tr>`;
                 dets.slice(1).forEach(d => {
-                    rows += `<tr>
-        <td>${d.username}</td>
-        <td>${d.email}</td>
-      </tr>`;
+                    rows += `<tr><td>${d.username}</td><td>${d.email}</td></tr>`;
                 });
             });
-
-            document.getElementById('vibesTable').innerHTML = `
-    <table class="movie-table">
-      <thead><tr><th>Movie Name</th><th>Username</th><th>Email</th><th>Total</th><th>Action</th><th>Romance</th><th>Comedy</th><th>Thriller</th><th>Drama</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
+            return `<table class="movie-table">
+    <thead><tr><th>Movie Name</th><th>Username</th><th>Email</th><th>Total</th><th>Action</th><th>Romance</th><th>Comedy</th><th>Thriller</th><th>Drama</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
         }
 
         loadStats();
